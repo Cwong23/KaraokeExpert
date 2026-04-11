@@ -19,6 +19,11 @@ class DoubleConv(nn.Module):
         return self.conv(x)
 
 
+def match_size(x, ref):
+    _, _, h, w = ref.shape
+    return F.interpolate(x, size=(h, w), mode="bilinear", align_corners=False)
+
+
 class UNetModel(nn.Module):
     def __init__(self, in_channels=1, out_channels=1):
         super().__init__()
@@ -60,18 +65,22 @@ class UNetModel(nn.Module):
 
         # Decoder
         d1 = self.up1(b)
+        d1 = match_size(d1, e4)
         d1 = torch.cat([d1, e4], dim=1)
         d1 = self.dec1(d1)
 
         d2 = self.up2(d1)
+        d2 = match_size(d2, e3)
         d2 = torch.cat([d2, e3], dim=1)
         d2 = self.dec2(d2)
 
         d3 = self.up3(d2)
+        d3 = match_size(d3, e2)
         d3 = torch.cat([d3, e2], dim=1)
         d3 = self.dec3(d3)
 
         d4 = self.up4(d3)
+        d4 = match_size(d4, e1)
         d4 = torch.cat([d4, e1], dim=1)
         d4 = self.dec4(d4)
 
