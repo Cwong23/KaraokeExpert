@@ -4,3 +4,6 @@
 **/__pycache__
 **/resulting_model
 **/testing_output
+minio_data
+.pytest_cache
+**/unet_final.pth
