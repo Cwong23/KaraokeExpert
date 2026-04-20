@@ -18,7 +18,7 @@ example param: int
 
 #### CreateMultipartUpload
 
-`POST /{user_id}/create_upload`
+`POST /song/create_upload`
 
 Request
 ~~~
@@ -33,7 +33,7 @@ upload_id: str
 
 #### UploadPart
 
-`POST /{user_id}/upload_part`
+`POST /song/upload_part`
 
 Request
 ~~~
@@ -45,7 +45,7 @@ song_clip: str (binary)
 
 #### AbortMultipartUpload
 
-`DELETE /{user_id}/abort_upload`
+`DELETE /song/abort_upload`
 
 Request
 ~~~
