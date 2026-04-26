@@ -49,13 +49,19 @@ def reconstruct(data, sr):
         padding = np.zeros((1, amp.shape[1]))
         amp = np.vstack([amp, padding])
 
-    return librosa.griffinlim(
+    audio = librosa.griffinlim(
         amp,
         n_iter=128,
         hop_length=512,
         win_length=2048,
         momentum=0.99
     )
+
+    max_val = np.max(np.abs(audio))
+    if max_val > 0:
+        audio = audio / max_val
+
+    return audio
 
 
 print(f"Loading {os.path.basename(SOURCE_FILE)}...")
