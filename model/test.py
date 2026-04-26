@@ -51,4 +51,4 @@ def reconstruct(data, sr):
 
 
 wav_pred = reconstruct(final_pred_npy, SR)
-sf.write("testing_output/full_30s_vocal.wav", wav_pred, SR)
+sf.write("data/testing_output/full_30s_vocal.wav", wav_pred, SR)
