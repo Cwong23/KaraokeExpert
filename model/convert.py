@@ -36,13 +36,32 @@ def audio_to_spec(y):
     return spec_db, np.angle(stft)
 
 
+def spec_to_amp(spec_data):
+    db = (np.clip(spec_data, 0, 1) * 80.0) - 80.0
+    return librosa.db_to_amplitude(db)
+
+
 def reconstruct(data, sr):
     db = (np.clip(data, 0, 1) * 80.0) - 80.0
     amp = librosa.db_to_amplitude(db)
 
-    return librosa.griffinlim(
-        amp, n_iter=128, hop_length=HOP_LENGTH, win_length=N_FFT, momentum=0.99
+    if amp.shape[0] == 1024:
+        padding = np.zeros((1, amp.shape[1]))
+        amp = np.vstack([amp, padding])
+
+    audio = librosa.griffinlim(
+        amp,
+        n_iter=128,
+        hop_length=512,
+        win_length=2048,
+        momentum=0.99
     )
+
+    max_val = np.max(np.abs(audio))
+    if max_val > 0:
+        audio = audio / max_val
+
+    return audio
 
 
 print(f"Loading {os.path.basename(SOURCE_FILE)}...")
@@ -74,10 +93,30 @@ pred_npy = full_pred[:, :original_w]
 final_pred_npy = np.vstack(
     [pred_npy, np.zeros((1, original_w))])
 
-print("Reconstructing audio...")
+print("Reconstructing vocal audio...")
 wav_vocals = reconstruct(final_pred_npy, SR)
 
-output_path = os.path.join(DEST_DIR, "extracted_vocals.wav")
-sf.write(output_path, wav_vocals, SR)
+print("Applying Spectral Masking...")
+vocal_map = np.clip(full_pred, 0, 1)
+mix_map = np.clip(mix_padded, 0, 1)
 
-print(f"Success! Vocals saved to: {output_path}")
+eps = 1e-10
+vocal_mask = vocal_map / (mix_map + eps)
+vocal_mask = np.clip(vocal_mask, 0, 1)
+inst_mask = 1.0 - vocal_mask
+
+final_inst_spec = mix_map * inst_mask
+
+final_inst_spec = final_inst_spec[:, :original_w]
+
+
+print(f"Reconstructing instrumental with shape: {final_inst_spec.shape}")
+wav_instrumental = reconstruct(final_inst_spec, SR)
+
+output_path_vocals = os.path.join(DEST_DIR, "extracted_vocals.wav")
+sf.write(output_path_vocals, wav_vocals, SR)
+print(f"Success! Vocals saved to: {output_path_vocals}")
+
+output_path_instrumental = os.path.join(DEST_DIR, "extracted_instrumental.wav")
+sf.write(output_path_instrumental, wav_instrumental, SR)
+print(f"Success! Instrumentals saved to: {output_path_instrumental}")
