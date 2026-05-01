@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500&display=swap');
+
 /* ── Reset & base ── */
 *,
 *::before,
@@ -7,14 +9,49 @@
   padding: 0;
 }
 
+/* ── Fade-up animation ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 /* ── Full-page dark background ── */
 .auth-bg {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(ellipse at 50% 40%, #0d1f3c 0%, #080f1e 100%);
-  font-family: "Segoe UI", sans-serif;
+  background: radial-gradient(ellipse at 50% 0%, #0d2240 0%, #060d1a 60%);
+  font-family: "DM Sans", sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Ambient orbs matching home page */
+.auth-bg::before {
+  content: "";
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(14, 165, 240, 0.1) 0%, transparent 70%);
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.auth-bg::after {
+  content: "";
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(0, 85, 238, 0.08) 0%, transparent 70%);
+  bottom: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  pointer-events: none;
 }
 
 /* ── Card ── */
@@ -28,19 +65,25 @@
   box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5),
     0 0 0 1px rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(12px);
+  position: relative;
+  z-index: 1;
+
+  animation: fadeUp 0.6s ease both;
 }
 
 /* ── Header ── */
 .auth-header {
   text-align: center;
   margin-bottom: 24px;
+  animation: fadeUp 0.6s ease 0.08s both;
 }
 
 .auth-title {
+  font-family: "Sora", sans-serif;
   font-size: 1.7rem;
-  font-weight: 700;
+  font-weight: 800;
   color: #ffffff;
-  letter-spacing: 0.01em;
+  letter-spacing: -0.01em;
 }
 
 .auth-subtitle {
@@ -57,6 +100,7 @@
   padding: 4px;
   margin-bottom: 24px;
   gap: 4px;
+  animation: fadeUp 0.6s ease 0.14s both;
 }
 
 .auth-tab {
@@ -70,6 +114,7 @@
   border-radius: 6px;
   background: transparent;
   color: #7a9cc0;
+  font-family: "DM Sans", sans-serif;
   font-size: 0.88rem;
   font-weight: 500;
   cursor: pointer;
@@ -92,6 +137,7 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
+  animation: fadeUp 0.6s ease 0.2s both;
 }
 
 .form-group {
@@ -113,6 +159,7 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
   color: #e0eeff;
+  font-family: "DM Sans", sans-serif;
   font-size: 0.88rem;
   outline: none;
   transition: border-color 0.2s, background 0.2s;
@@ -132,21 +179,23 @@
   width: 100%;
   padding: 12px;
   margin-top: 4px;
-  background: linear-gradient(135deg, #0ea5f0, #0055ee);
+  background: linear-gradient(135deg, #12c2f8, #0050e8);
   border: none;
   border-radius: 8px;
   color: #ffffff;
+  font-family: "DM Sans", sans-serif;
   font-size: 0.92rem;
   font-weight: 600;
   letter-spacing: 0.02em;
   cursor: pointer;
-  transition: opacity 0.2s, transform 0.15s;
+  transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
   box-shadow: 0 4px 18px rgba(14, 165, 240, 0.35);
 }
 
 .auth-btn:hover {
   opacity: 0.9;
   transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(14, 165, 240, 0.5);
 }
 
 .auth-btn:active {
@@ -190,26 +239,6 @@
   text-align: center;
 }
 
-/* ── Signed-in welcome screen ── */
-.welcome-text {
-  text-align: center;
-  color: #c0d8f0;
-  font-size: 0.95rem;
-  margin-bottom: 24px;
-}
-
-.signout-wrap {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-}
-
-.signout-label {
-  font-size: 0.85rem;
-  color: #7a9cc0;
-}
-
 /* ── Google button ── */
 .google-btn {
   width: 100%;
@@ -222,6 +251,7 @@
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 8px;
   color: #e0eeff;
+  font-family: "DM Sans", sans-serif;
   font-size: 0.88rem;
   font-weight: 500;
   cursor: pointer;
@@ -257,6 +287,11 @@
   color: #4a6a8a;
 }
 
+/* ── Hide Clerk captcha div when empty ── */
+#clerk-captcha:empty {
+  display: none;
+}
+
 /* ── Verification info text ── */
 .verify-info {
   font-size: 0.82rem;
@@ -267,8 +302,4 @@
 
 .verify-info strong {
   color: #c0d8f0;
-}
-
-#clerk-captcha:empty {
-  display: none;
 }

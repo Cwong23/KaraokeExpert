@@ -1,0 +1,194 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500&display=swap');
+
+/* ── Background ── */
+.home-bg {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse at 50% 0%, #0d2240 0%, #060d1a 60%);
+  font-family: "DM Sans", sans-serif;
+  position: relative;
+  overflow: hidden;
+  padding: 40px 24px;
+}
+
+/* ── Ambient glow orbs ── */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.orb-1 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(14, 165, 240, 0.12) 0%, transparent 70%);
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.orb-2 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(0, 85, 238, 0.1) 0%, transparent 70%);
+  bottom: -80px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* ── Back button ── */
+.back-btn {
+  position: absolute;
+  top: 28px;
+  left: 32px;
+  background: none;
+  border: none;
+  color: #5a7a9a;
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  z-index: 10;
+  transition: color 0.2s;
+  letter-spacing: 0.01em;
+}
+
+.back-btn:hover {
+  color: #a0c4e0;
+}
+
+/* ── Main content ── */
+.home-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 32px;
+  z-index: 1;
+  max-width: 640px;
+  animation: fadeUp 0.7s ease both;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── App icon ── */
+.app-icon {
+  position: relative;
+  width: 110px;
+  height: 110px;
+  background: linear-gradient(145deg, #20c8f8, #0055ee);
+  border-radius: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.08),
+    0 8px 32px rgba(14, 165, 240, 0.25);
+  animation: fadeUp 0.7s ease 0.05s both;
+}
+
+.app-icon svg {
+  width: 56px;
+  height: 56px;
+  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));
+}
+
+.icon-glow {
+  position: absolute;
+  inset: -20px;
+  background: radial-gradient(circle, rgba(14, 165, 240, 0.2) 0%, transparent 70%);
+  border-radius: 50%;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* ── Text ── */
+.home-text {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: fadeUp 0.7s ease 0.12s both;
+}
+
+.home-title {
+  font-family: "Sora", sans-serif;
+  font-size: clamp(2.4rem, 6vw, 3.6rem);
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.home-desc {
+  font-size: 1rem;
+  color: #5e82a8;
+  line-height: 1.75;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* ── Action buttons ── */
+.home-actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+  animation: fadeUp 0.7s ease 0.2s both;
+}
+
+.home-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 30px;
+  border-radius: 50px;
+  font-family: "DM Sans", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.18s ease, opacity 0.18s ease, box-shadow 0.18s ease;
+  letter-spacing: 0.01em;
+}
+
+.home-btn:hover {
+  transform: translateY(-2px);
+}
+
+.home-btn:active {
+  transform: translateY(0);
+}
+
+.home-btn.primary {
+  background: linear-gradient(135deg, #12c2f8, #0050e8);
+  color: #ffffff;
+  box-shadow: 0 4px 24px rgba(14, 165, 240, 0.35), 0 0 0 1px rgba(255,255,255,0.06) inset;
+}
+
+.home-btn.primary:hover {
+  box-shadow: 0 8px 32px rgba(14, 165, 240, 0.5), 0 0 0 1px rgba(255,255,255,0.08) inset;
+}
+
+.home-btn.secondary {
+  background: rgba(255, 255, 255, 0.06);
+  color: #8ab0d0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+}
+
+.home-btn.secondary:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #c0d8f0;
+  border-color: rgba(255, 255, 255, 0.18);
+}
