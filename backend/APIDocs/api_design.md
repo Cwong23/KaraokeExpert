@@ -23,12 +23,12 @@ example param: int
 Request
 ~~~
 song_name: str
-part_amounts: int
 ~~~
 
 Response
 ~~~
 upload_id: str
+song_id: str
 ~~~
 
 #### UploadPart
