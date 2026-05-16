@@ -1,38 +1,38 @@
-from datetime import datetime
+from datetime import datetime, UTC
+from bson import ObjectId
 
 
-# Song
-def new_song(user_id: str, title: str, file_path: str) -> dict:
+def new_song(song_id: str, user_id: str, title: str, file_path: str) -> dict:
     return {
-        "userId": user_id, # connected to clerk
+        "_id": song_id,
+        "userId": user_id,
         "title": title,
-        "filePath": file_path, # original audio
-        "instrumentalPath": None, # instrumental audio
-        "vocalPath": None, # just vocals audio
+        "filePath": file_path,
+        "instrumentalPath": None,
+        "vocalPath": None,
         "duration": None,
         "language": None,
-        "status": "uploaded",
-        "uploadedAt": datetime.utcnow(),
+        "status": "uploading",
+        "uploadedAt": datetime.now(UTC),
     }
 
 
-# Lyrics
 def new_lyrics(song_id, language: str, lines: list) -> dict:
     return {
         "songId": song_id,
         "language": language,
-        "lines": lines, # list of dictionaries, each dictionary containing text, start time, and end time
-        "createdAt": datetime.utcnow(),
+        # list of dictionaries, each dictionary containing text, start time, and end time
+        "lines": lines,
+        "createdAt": datetime.now(UTC),
     }
 
 
-# Pitch Session
 def new_pitch_session(user_id: str, song_id, artist_pitch: list, user_pitch: list, accuracy_score: float) -> dict:
     return {
         "userId": user_id,
         "songId": song_id,
         "artistPitch": artist_pitch,
         "userPitch": user_pitch,
-        "accuracyScore": accuracy_score, # final score displayed at end
-        "createdAt": datetime.utcnow(),
+        "accuracyScore": accuracy_score,  # final score displayed at end
+        "createdAt": datetime.now(UTC),
     }
