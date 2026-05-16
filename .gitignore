@@ -1,5 +1,6 @@
 .env
 **/.env
+.env.local
 **/data/processed_data
 **/__pycache__
 **/resulting_model
