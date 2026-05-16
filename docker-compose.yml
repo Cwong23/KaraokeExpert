@@ -11,6 +11,8 @@ services:
     networks:
       - app-network
     command: flask --app app.app run --host=0.0.0.0 --port=5000
+    depends_on:
+      - mongodb
 
   frontend:
     build: ./frontend
@@ -28,7 +30,22 @@ services:
       - backend
     networks:
       - app-network
-      
+
+  mongodb:
+    image: mongo:7
+    container_name: mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+      MONGO_INITDB_DATABASE: karaokeexpert
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - app-network
+
   minio:
     image: quay.io/minio/minio
     ports:
@@ -45,3 +62,6 @@ services:
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  mongo_data:

@@ -2,8 +2,13 @@ import os
 from pymongo import MongoClient
 from dotenv import load_dotenv
 
-root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
-load_dotenv(os.path.join(root, ".env.local"))
+
+# For Local Testing
+# root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
+# load_dotenv(os.path.join(root, ".env.local"))
+
+# Docker
+load_dotenv(os.path.join(os.path.dirname(__file__), "../../.env"))
 
 client = None
 db = None
