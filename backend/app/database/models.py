@@ -1,10 +1,18 @@
 from datetime import datetime
+import bcrypt
 
+def new_user(email: str, password: str) -> dict:
+    hashed = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+    return {
+        "email": email,
+        "password": hashed,
+        "createdAt": datetime.utcnow(),
+    }
 
 # Song
 def new_song(user_id: str, title: str, file_path: str) -> dict:
     return {
-        "userId": user_id, # connected to clerk
+        "userId": user_id,
         "title": title,
         "filePath": file_path, # original audio
         "instrumentalPath": None, # instrumental audio

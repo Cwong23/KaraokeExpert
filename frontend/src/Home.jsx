@@ -1,19 +1,16 @@
-import { useClerk } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
 
 export default function Home() {
-  const { signOut } = useClerk();
   const navigate = useNavigate();
 
-  async function handleSignOut() {
-    await signOut();
+  function handleSignOut() {
+    localStorage.removeItem("token");
     navigate("/");
   }
 
   return (
     <div className="home-bg">
-      {/* Ambient glow orbs */}
       <div className="orb orb-1" />
       <div className="orb orb-2" />
 
