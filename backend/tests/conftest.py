@@ -1,9 +1,12 @@
-import pytest
-from flask import Flask
-from backend.app.routes.songs import song_bp
-from flask_jwt_extended import JWTManager, create_access_token
-from uuid import uuid4
 # python -m pytest
+import pytest
+from uuid import uuid4
+from flask_jwt_extended import JWTManager, create_access_token
+from backend.app.routes.songs import song_bp
+from flask import Flask
+import os
+import mongomock
+from unittest.mock import MagicMock
 
 
 @pytest.fixture
@@ -30,3 +33,27 @@ def auth_headers(app):
 @pytest.fixture
 def client(app):
     return app.test_client()
+
+
+@pytest.fixture(scope="session")
+def mock_minio_client():
+    mock_minio = MagicMock()
+    yield mock_minio
+
+
+@pytest.fixture(scope="session")
+def test_db_client():
+    client = mongomock.MongoClient()
+    yield client
+    client.close()
+
+
+@pytest.fixture(scope="function")
+def test_db(test_db_client):
+    db_name = "karaokeexpert"
+    db = test_db_client[db_name]
+
+    yield db
+
+    for collection_name in db.list_collection_names():
+        db[collection_name].drop()
