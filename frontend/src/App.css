@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500&display=swap');
 
-/* ── Reset & base ── */
+/* ── Reset & Base Layout ── */
 *,
 *::before,
 *::after {
@@ -9,135 +9,160 @@
   padding: 0;
 }
 
-/* ── Fade-up animation ── */
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(24px); }
+  from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Full-page dark background ── */
 .auth-bg {
+  position: relative;
   min-height: 100vh;
+  width: 100%;
+  background-color: #0b0813; /* Exact theme background color from home page */
+  color: #ffffff;
+  font-family: "DM Sans", sans-serif;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(ellipse at 50% 0%, #0d2240 0%, #060d1a 60%);
-  font-family: "DM Sans", sans-serif;
-  position: relative;
   overflow: hidden;
+  padding: 24px;
 }
 
-/* Ambient orbs matching home page */
-.auth-bg::before {
-  content: "";
+/* ── Exact Matching Ambient Orbs ── */
+.orb {
   position: absolute;
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, rgba(14, 165, 240, 0.1) 0%, transparent 70%);
-  top: -100px;
-  left: 50%;
-  transform: translateX(-50%);
   border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.45;
   pointer-events: none;
+  z-index: 0;
 }
 
-.auth-bg::after {
-  content: "";
-  position: absolute;
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, rgba(0, 85, 238, 0.08) 0%, transparent 70%);
-  bottom: -80px;
-  left: 50%;
-  transform: translateX(-50%);
-  border-radius: 50%;
-  pointer-events: none;
+.orb-1 {
+  top: -10%;
+  left: -10%;
+  width: 450px;
+  height: 450px;
+  background: #6366f1; /* Indigo glow */
 }
 
-/* ── Card ── */
+.orb-2 {
+  bottom: -10%;
+  right: -10%;
+  width: 450px;
+  height: 450px;
+  background: #a855f7; /* Purple glow */
+}
+
+/* ── Central Layout Card ── */
 .auth-card {
-  width: 100%;
-  max-width: 340px;
-  background: linear-gradient(145deg, #112244cc, #0a1628cc);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 16px;
-  padding: 36px 32px 28px;
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5),
-    0 0 0 1px rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(12px);
   position: relative;
   z-index: 1;
-
-  animation: fadeUp 0.6s ease both;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 40px 32px;
+  border-radius: 24px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-/* ── Header ── */
+/* ── Header Icon & Typography ── */
 .auth-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
-  margin-bottom: 24px;
-  animation: fadeUp 0.6s ease 0.08s both;
+  margin-bottom: 32px;
+}
+
+.app-icon-wrapper {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-icon {
+  width: 40px;
+  height: 40px;
+  position: relative;
+  z-index: 2;
+}
+
+.icon-glow {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  background: #a855f7;
+  filter: blur(20px);
+  opacity: 0.6;
+  z-index: 1;
 }
 
 .auth-title {
   font-family: "Sora", sans-serif;
-  font-size: 1.7rem;
+  font-size: 2rem;
   font-weight: 800;
-  color: #ffffff;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.03em;
+  margin: 0 0 6px 0;
+  background: linear-gradient(to bottom, #ffffff, #e5e7eb);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .auth-subtitle {
-  font-size: 0.82rem;
-  color: #7a9cc0;
-  margin-top: 4px;
+  font-size: 0.95rem;
+  color: #9ca3af;
 }
 
-/* ── Tab toggle ── */
+/* ── Segmented Tab Toggle ── */
 .auth-tabs {
   display: flex;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
   padding: 4px;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
   gap: 4px;
-  animation: fadeUp 0.6s ease 0.14s both;
 }
 
 .auth-tab {
   flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 9px 0;
+  padding: 10px 0;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   background: transparent;
-  color: #7a9cc0;
+  color: #9ca3af;
   font-family: "DM Sans", sans-serif;
-  font-size: 0.88rem;
-  font-weight: 500;
+  font-size: 0.9rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
+  transition: all 0.2s ease;
 }
 
 .auth-tab.active {
-  background: linear-gradient(135deg, #0ea5f0, #0066ff);
+  background: rgba(255, 255, 255, 0.08);
   color: #ffffff;
-  box-shadow: 0 2px 12px rgba(14, 165, 240, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .auth-tab:not(.active):hover {
-  background: rgba(255, 255, 255, 0.07);
-  color: #c0d8f0;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.03);
 }
 
-/* ── Form ── */
+/* ── Form Control Fields ── */
 .auth-form {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  animation: fadeUp 0.6s ease 0.2s both;
+  gap: 18px;
 }
 
 .form-group {
@@ -147,159 +172,94 @@
 }
 
 .form-label {
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   font-weight: 500;
-  color: #9ab8d8;
+  color: #9ca3af;
+  padding-left: 2px;
 }
 
 .form-input {
   width: 100%;
-  padding: 11px 14px;
-  background: rgba(255, 255, 255, 0.07);
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
-  color: #e0eeff;
+  border-radius: 12px;
+  color: #ffffff;
   font-family: "DM Sans", sans-serif;
-  font-size: 0.88rem;
+  font-size: 0.95rem;
   outline: none;
-  transition: border-color 0.2s, background 0.2s;
+  transition: all 0.2s ease;
 }
 
 .form-input::placeholder {
-  color: #3d5a7a;
+  color: #4b5563;
 }
 
 .form-input:focus {
-  border-color: rgba(14, 165, 240, 0.5);
-  background: rgba(14, 165, 240, 0.06);
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.07);
 }
 
-/* ── Primary button ── */
-.auth-btn {
+/* ── Primary Crisp Action Button ── */
+.auth-btn.primary {
   width: 100%;
-  padding: 12px;
-  margin-top: 4px;
-  background: linear-gradient(135deg, #12c2f8, #0050e8);
+  padding: 14px;
+  margin-top: 8px;
+  background: #ffffff;
+  color: #0b0813;
   border: none;
-  border-radius: 8px;
-  color: #ffffff;
+  border-radius: 12px;
   font-family: "DM Sans", sans-serif;
-  font-size: 0.92rem;
+  font-size: 1rem;
   font-weight: 600;
-  letter-spacing: 0.02em;
   cursor: pointer;
-  transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
-  box-shadow: 0 4px 18px rgba(14, 165, 240, 0.35);
+  box-shadow: 0 4px 20px rgba(255, 255, 255, 0.1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.auth-btn:hover {
-  opacity: 0.9;
-  transform: translateY(-1px);
-  box-shadow: 0 8px 24px rgba(14, 165, 240, 0.5);
+.auth-btn.primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  background: #f3f4f6;
+  box-shadow: 0 6px 24px rgba(255, 255, 255, 0.18);
 }
 
-.auth-btn:active {
+.auth-btn.primary:active:not(:disabled) {
   transform: translateY(0);
-  opacity: 1;
 }
 
-.auth-btn:disabled {
-  opacity: 0.6;
+.auth-btn.primary:disabled {
+  opacity: 0.5;
   cursor: not-allowed;
-  transform: none;
 }
 
-/* ── Switch link ── */
+/* ── Secondary Link Options ── */
 .auth-switch {
   text-align: center;
-  font-size: 0.8rem;
-  color: #6e8eb0;
+  font-size: 0.88rem;
+  color: #9ca3af;
   margin-top: 4px;
 }
 
 .auth-link {
-  color: #0ea5f0;
-  font-weight: 500;
+  color: #ffffff;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
   cursor: pointer;
   transition: color 0.2s;
 }
 
 .auth-link:hover {
-  color: #5dd3ff;
+  color: #d1d5db;
 }
 
-/* ── Error message ── */
+/* ── Error Output Box ── */
 .auth-error {
-  font-size: 0.8rem;
-  color: #ff6b6b;
-  background: rgba(255, 107, 107, 0.1);
-  border: 1px solid rgba(255, 107, 107, 0.2);
-  border-radius: 6px;
-  padding: 8px 12px;
-  text-align: center;
-}
-
-/* ── Google button ── */
-.google-btn {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 11px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 0.85rem;
+  color: #f87171;
+  background: rgba(248, 113, 113, 0.06);
+  border: 1px solid rgba(248, 113, 113, 0.15);
   border-radius: 8px;
-  color: #e0eeff;
-  font-family: "DM Sans", sans-serif;
-  font-size: 0.88rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.2s, border-color 0.2s;
-}
-
-.google-btn:hover {
-  background: rgba(255, 255, 255, 0.11);
-  border-color: rgba(255, 255, 255, 0.2);
-}
-
-.google-icon {
-  width: 18px;
-  height: 18px;
-  flex-shrink: 0;
-}
-
-/* ── Divider ── */
-.divider {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.divider-line {
-  flex: 1;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.divider-text {
-  font-size: 0.75rem;
-  color: #4a6a8a;
-}
-
-/* ── Hide Clerk captcha div when empty ── */
-#clerk-captcha:empty {
-  display: none;
-}
-
-/* ── Verification info text ── */
-.verify-info {
-  font-size: 0.82rem;
-  color: #7a9cc0;
+  padding: 10px 14px;
   text-align: center;
-  line-height: 1.5;
-}
-
-.verify-info strong {
-  color: #c0d8f0;
 }

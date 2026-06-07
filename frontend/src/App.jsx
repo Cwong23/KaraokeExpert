@@ -13,12 +13,25 @@ export default function App() {
     if (localStorage.getItem("token")) {
       navigate("/home");
     }
-  }, []);
+  }, [navigate]);
 
   return (
     <div className="auth-bg">
+      {/* Keeping background orbs identical to the Home page */}
+      <div className="orb orb-1" />
+      <div className="orb orb-2" />
+
       <div className="auth-card">
         <div className="auth-header">
+          {/* Microphone Icon added to mirror Home design language */}
+          <div className="app-icon-wrapper">
+            <svg className="app-icon" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+              <path d="M19 10v1a7 7 0 0 1-14 0v-1" />
+              <line x1="12" y1="19" x2="12" y2="22" />
+            </svg>
+            <div className="icon-glow" />
+          </div>
           <h1 className="auth-title">Karaoke Expert</h1>
           <p className="auth-subtitle">Sing your heart out</p>
         </div>
@@ -44,16 +57,6 @@ export default function App() {
           <SignUpForm onSwitchTab={() => setTab("login")} />
         )}
       </div>
-    </div>
-  );
-}
-
-function Divider() {
-  return (
-    <div className="divider">
-      <span className="divider-line" />
-      <span className="divider-text">or</span>
-      <span className="divider-line" />
     </div>
   );
 }
@@ -111,7 +114,7 @@ function LoginForm({ onSwitchTab }) {
         />
       </div>
       {error && <p className="auth-error">{error}</p>}
-      <button className="auth-btn" onClick={handleLogin} disabled={loading}>
+      <button className="auth-btn primary" onClick={handleLogin} disabled={loading}>
         {loading ? "Logging in..." : "Login"}
       </button>
       <p className="auth-switch">
@@ -140,7 +143,6 @@ function SignUpForm({ onSwitchTab }) {
       });
       const data = await response.json();
       if (response.ok) {
-        // auto login after signup
         const loginResponse = await fetch(`${API_URL}/auth/login`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -184,7 +186,7 @@ function SignUpForm({ onSwitchTab }) {
         />
       </div>
       {error && <p className="auth-error">{error}</p>}
-      <button className="auth-btn" onClick={handleSignUp} disabled={loading}>
+      <button className="auth-btn primary" onClick={handleSignUp} disabled={loading}>
         {loading ? "Creating account..." : "Create Account"}
       </button>
       <p className="auth-switch">
