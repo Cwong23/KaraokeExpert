@@ -7,10 +7,20 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - ./backend:/app
+      - ./backend:/app/src/backend
+    environment:
+      PYTHONPATH: /app/src:/app/src/backend
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      ENDPOINT_URL: ${ENDPOINT_URL}
+      MONGO_ROOT_USER: admin
+      MONGO_ROOT_PASSWORD: password123
+      MONGO_DB_NAME: karaokeexpert
+      MONGO_PORT: 27017
+      
     networks:
       - app-network
-    command: flask --app app.app run --host=0.0.0.0 --port=5000
+    command: flask --app backend.app.app run --host=0.0.0.0 --port=5000
     depends_on:
       - mongodb
 
@@ -72,14 +82,16 @@ services:
     depends_on:
       minio:
         condition: service_healthy
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_BUCKET_NAME: songs
     entrypoint: >
       /bin/sh -c "
-      /usr/bin/mc alias set songs http://minio:9000 ${MINIO_ROOT_USER} ${MINIO_ROOT_PASSWORD};
-      /usr/bin/mc mb --ignore-existing songs;
+      /usr/bin/mc alias set local http://minio:9000 $${MINIO_ROOT_USER} $${MINIO_ROOT_PASSWORD};
+      /usr/bin/mc mb --ignore-existing local/$${MINIO_BUCKET_NAME};
       exit 0;
       "
-    environment:
-      MINIO_BUCKET_NAME: songs
     networks:
       - app-network
 

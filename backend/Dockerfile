@@ -1,17 +1,16 @@
 FROM python:3.11-slim
 
 # Set working directory
-WORKDIR /app
+WORKDIR /app/src
 
 # Copy requirements and install Python packages
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application
-COPY . .
+COPY . ./backend
 
 # Expose the port and run the Flask app
-ENV FLASK_APP=app.py
-ENV FLASK_ENV=development
+ENV PYTHONPATH=/app/src
 
-CMD ["sh", "-c", "flask run --host=0.0.0.0 --port=${PORT:-5000}"]
+CMD ["flask", "--app", "backend.app.app", "run", "--host=0.0.0.0", "--port=5000"]
