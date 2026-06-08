@@ -51,3 +51,26 @@ Request
 ~~~
 upload_id: str
 ~~~
+
+#### Register
+`POST /auth/register`
+
+Request
+~~~
+email: str
+password: str
+~~~
+
+#### Login
+`POST /auth/login`
+
+Request
+~~~
+email: str
+password: str
+~~~
+
+Response
+~~~
+token: str
+~~~
