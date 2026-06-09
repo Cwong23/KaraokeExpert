@@ -1,5 +1,5 @@
 from unittest.mock import patch
-from backend.app.apis.create_multipart_upload import create_upload
+from backend.app.apis.create_upload import get_url
 
 
 def test_no_auth_song(client):
@@ -9,12 +9,12 @@ def test_no_auth_song(client):
 
 
 def test_song_upload_route(client, auth_headers, monkeypatch):
-    def mock_create_upload(minio_client, collection, user_id, request):
-        return {"upload_id": "mock-upload-id-123", "song_id": "id"}, 200
+    def mock_get_url(minio_client, redis_client, collection, user_id, request):
+        return {"url": "test-url", "song_id": "id"}, 200
 
     monkeypatch.setattr(
-        "backend.app.routes.songs.create_upload",
-        mock_create_upload
+        "backend.app.routes.songs.get_url",
+        mock_get_url
     )
 
     response = client.post(
@@ -25,10 +25,10 @@ def test_song_upload_route(client, auth_headers, monkeypatch):
 
     assert response.status_code == 200
     assert response.get_json() == {
-        "upload_id": "mock-upload-id-123", "song_id": "id"}
+        "url": "test-url", "song_id": "id"}
 
 
-def test_song_upload(mock_minio_client, test_db_client, test_db):
+def test_song_upload(mock_minio_client, test_db_client, test_db, mock_redis_client):
     collection = test_db["songs"]
     user_id = "test_user_123"
     request_data = {"song_name": "still"}
@@ -37,11 +37,12 @@ def test_song_upload(mock_minio_client, test_db_client, test_db):
         "UploadId": "banana"
     }
 
-    response = create_upload(
+    response = get_url(
         minio_client=mock_minio_client,
         collection=collection,
         user_id=user_id,
-        request=request_data
+        request=request_data,
+        redis_client=mock_redis_client
     )
 
     inserted_song = collection.find_one({"userId": user_id})
@@ -51,4 +52,4 @@ def test_song_upload(mock_minio_client, test_db_client, test_db):
     assert inserted_song["status"] == "uploading"
     assert f"{user_id}/" in inserted_song["filePath"]
     assert inserted_song["_id"] == response["song_id"]
-    assert response["upload_id"] == "banana"
+    assert "url" in response

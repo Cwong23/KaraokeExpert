@@ -4,7 +4,7 @@ from backend.app.database.models import new_song
 from uuid import uuid4
 
 
-def create_upload(minio_client, collection, user_id: str, request: dict[str, str]):
+def get_url(minio_client, redis_client, collection, user_id: str, request: dict[str, str]):
     uuid = str(uuid4())
     file_path = f"{user_id}/{uuid}/"
 
@@ -13,11 +13,11 @@ def create_upload(minio_client, collection, user_id: str, request: dict[str, str
 
     collection.insert_one(song_document)
 
-    response = minio_client.create_multipart_upload(
+    url = minio_client.generate_presigned_url(
         Bucket=os.environ["MINIO_BUCKET_NAME"],
         Key=file_path + "original.wav"
     )
 
-    upload_id = response['UploadId']
+    redis_client.set(f"task:{uuid}:status", "creating")
 
-    return {"upload_id": upload_id, "song_id": uuid}
+    return {"url": url, "song_id": uuid}
