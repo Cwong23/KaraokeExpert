@@ -42,6 +42,12 @@ def mock_minio_client():
 
 
 @pytest.fixture(scope="session")
+def mock_redis_client():
+    mock_redis = MagicMock()
+    yield mock_redis
+
+
+@pytest.fixture(scope="session")
 def test_db_client():
     client = mongomock.MongoClient()
     yield client

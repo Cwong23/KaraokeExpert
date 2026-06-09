@@ -1,5 +1,5 @@
 ### API Design
-This file contains the high level overview of how APIs are to be used and called. For examples and more indepth documentation, look at the `.yml` files in this directory.
+This file contains the high level overview of how APIs are to be used and called.
 
 #### Example
 `GET /path/to/api`
@@ -16,7 +16,7 @@ example param: int
 ~~~
 
 
-#### CreateMultipartUpload
+#### CreateUpload
 
 `POST /song/create_upload`
 
@@ -27,29 +27,42 @@ song_name: str
 
 Response
 ~~~
-upload_id: str
+url: str
 song_id: str
 ~~~
 
-#### UploadPart
+#### ProcessSong
 
-`POST /song/upload_part`
-
-Request
-~~~
-upload_id: str
-part_numer: int
-song_clip: str (binary)
-~~~
-
-
-#### AbortMultipartUpload
-
-`DELETE /song/abort_upload`
+`PUT /song/process_song`
 
 Request
 ~~~
-upload_id: str
+song_id: str
+~~~
+
+#### GetSong
+
+`GET /song`
+
+Request
+~~~
+song_name: str
+~~~
+
+Response
+~~~
+url: str
+song_id: str
+~~~
+
+
+#### DeleteSong
+
+`DELETE /song/delete`
+
+Request
+~~~
+song_id: str
 ~~~
 
 #### Register
