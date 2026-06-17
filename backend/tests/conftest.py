@@ -48,6 +48,12 @@ def mock_redis_client():
 
 
 @pytest.fixture(scope="session")
+def mock_kafka_client():
+    mock_kafka = MagicMock()
+    yield mock_kafka
+
+
+@pytest.fixture(scope="session")
 def test_db_client():
     client = mongomock.MongoClient()
     yield client
