@@ -40,6 +40,20 @@ Request
 song_id: str
 ~~~
 
+#### GetSongStatus
+
+`GET /status`
+
+Request
+~~~
+song_id: str
+~~~
+
+Response
+~~~
+status: str
+~~~
+
 #### GetSong
 
 `GET /song`
