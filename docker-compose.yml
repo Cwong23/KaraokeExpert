@@ -133,6 +133,20 @@ services:
     networks:
       - app-network
 
+  worker:
+    build:
+      context: ./worker
+      dockerfile: Dockerfile
+    container_name: karaoke_worker
+    restart: always
+    volumes:
+      - ./worker:/worker
+    environment:
+      PYTHONUNBUFFERED: 1
+      KAFKA_BOOTSTRAP_SERVERS: "localhost:9092"
+    depends_on:
+      - redis
+      - kafka
 
 networks:
   app-network:
