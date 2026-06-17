@@ -1,3 +1,5 @@
+import json
+from confluent_kafka import Producer
 import boto3
 import os
 from pymongo import MongoClient
@@ -20,6 +22,9 @@ MONGO_HOST = "mongodb" if DOCKER else "localhost"
 # Redis
 REDIS_HOST = os.environ["REDIS_HOST"]
 REDIS_PORT = os.environ["REDIS_PORT"]
+
+# Kafka
+KAFKA_PORT = os.environ["KAFKA_PORT"]
 
 
 def container_client():
@@ -44,3 +49,7 @@ def redis_client():
     client = Redis(host=REDIS_HOST, port=REDIS_PORT,
                    db=0, decode_responses=True)
     return client
+
+
+def kafka_client():
+    return Producer({'bootstrap.servers': KAFKA_PORT})

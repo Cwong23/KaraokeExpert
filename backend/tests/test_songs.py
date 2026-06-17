@@ -1,10 +1,13 @@
 from unittest.mock import patch
 from backend.app.apis.create_upload import get_url
+from backend.app.apis.process_song import process
 
 
 def test_no_auth_song(client):
     response = client.post('/songs/create_upload')
+    assert response.status_code == 401
 
+    response = client.put('/songs/process_song')
     assert response.status_code == 401
 
 
@@ -53,3 +56,22 @@ def test_song_upload(mock_minio_client, test_db_client, test_db, mock_redis_clie
     assert f"{user_id}/" in inserted_song["filePath"]
     assert inserted_song["_id"] == response["song_id"]
     assert "url" in response
+
+
+def test_song_process_route(client, auth_headers, monkeypatch, mock_kafka_client, ):
+    def mock_process_song(redis_client, kafka_client, user_id, request):
+        return {}, 200
+
+    monkeypatch.setattr(
+        "backend.app.routes.songs.process",
+        mock_process_song
+    )
+
+    response = client.put(
+        '/songs/process_song',
+        headers=auth_headers,
+        json={'song_id': '123'}
+    )
+
+    assert response.status_code == 200
+    assert response.get_json() == {}
