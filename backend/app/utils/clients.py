@@ -1,10 +1,13 @@
+import json
+from confluent_kafka import Producer
 import boto3
 import os
 from pymongo import MongoClient
+from redis import Redis
 
 DOCKER = os.getenv("IS_DOCKER") == "true"
 
-# minio
+# Minio
 MINIO_ROOT_USER = os.environ["MINIO_ROOT_USER"]
 MINIO_ROOT_PASSWORD = os.environ["MINIO_ROOT_PASSWORD"]
 MINIO_ENDPOINT = os.environ["ENDPOINT_URL"]
@@ -15,6 +18,13 @@ MONGO_ROOT_PASSWORD = os.environ["MONGO_ROOT_PASSWORD"]
 MONGO_DB_NAME = os.environ["MONGO_DB_NAME"]
 MONGO_PORT = os.getenv("MONGO_PORT", "27017")
 MONGO_HOST = "mongodb" if DOCKER else "localhost"
+
+# Redis
+REDIS_HOST = os.environ["REDIS_HOST"]
+REDIS_PORT = os.environ["REDIS_PORT"]
+
+# Kafka
+KAFKA_PORT = os.environ["KAFKA_PORT"]
 
 
 def container_client():
@@ -33,3 +43,13 @@ def mongo_client():
         f"mongodb://{MONGO_ROOT_USER}:{MONGO_ROOT_PASSWORD}@{MONGO_HOST}:{MONGO_PORT}/?authSource=admin")
     db = client[MONGO_DB_NAME]
     return db
+
+
+def redis_client():
+    client = Redis(host=REDIS_HOST, port=REDIS_PORT,
+                   db=0, decode_responses=True)
+    return client
+
+
+def kafka_client():
+    return Producer({'bootstrap.servers': KAFKA_PORT})

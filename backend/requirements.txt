@@ -8,3 +8,6 @@ pymongo
 boto3
 uuid6
 marshmallow
+bcrypt
+redis
+confluent_kafka

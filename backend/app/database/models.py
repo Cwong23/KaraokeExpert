@@ -2,6 +2,7 @@ from datetime import datetime, UTC
 from bson import ObjectId
 import bcrypt
 
+
 def new_user(email: str, password: str) -> dict:
     hashed = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
     return {
