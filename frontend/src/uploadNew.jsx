@@ -35,11 +35,9 @@ export default function Upload() {
 
   return (
     <div className="upload-bg">
-      {/* Universal Background Orbs matching all other views */}
       <div className="orb orb-1" />
       <div className="orb orb-2" />
 
-      {/* Synchronized Navigation Header (Spread Left & Right) */}
       <header className="upload-nav">
         <button className="upload-back-nav-btn" onClick={() => navigate("/home")}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -61,7 +59,6 @@ export default function Upload() {
         </button>
       </header>
 
-      {/* Main Glassmorphism Content Card */}
       <main className="upload-card">
         <div className="upload-card-header">
           <h1 className="upload-title">Upload Your Song</h1>
@@ -70,7 +67,6 @@ export default function Upload() {
           </p>
         </div>
 
-        {/* Drop Zone */}
         <div
           className={`upload-dropzone ${dragging ? "dragging" : ""} ${file ? "has-file" : ""}`}
           onClick={() => fileInputRef.current.click()}
@@ -116,7 +112,6 @@ export default function Upload() {
           )}
         </div>
 
-        {/* Crisp action button matching the main interface styling */}
         {file && (
           <button className="upload-submit-btn primary">
             Process Song

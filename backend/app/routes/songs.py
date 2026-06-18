@@ -1,8 +1,8 @@
 from flask import Blueprint, current_app, jsonify, request, g
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from backend.app.apis.create_multipart_upload import create_upload
+from app.apis.create_multipart_upload import create_upload
 from http import HTTPStatus
-from backend.app.utils.clients import container_client, mongo_client
+from app.utils.clients import container_client, mongo_client
 from marshmallow import Schema, fields, ValidationError
 from functools import wraps
 

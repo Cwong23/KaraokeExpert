@@ -1,15 +1,15 @@
 import os
 from http import HTTPStatus
-from backend.app.database.models import new_song
-from uuid import uuid6
+from app.database.models import new_song
+import uuid
 
 
 def create_upload(minio_client, collection, user_id: str, request: dict[str, str]):
-    uuid = str(uuid6())
-    file_path = f"{user_id}/{uuid}/"
+    song_id = str(uuid.uuid4())
+    file_path = f"{user_id}/{song_id}/"
 
     song_document = new_song(
-        user_id=user_id, song_id=uuid, title=request["song_name"], file_path=f"{user_id}/{uuid}/")
+        user_id=user_id, song_id=song_id, title=request["song_name"], file_path=f"{user_id}/{song_id}/")
 
     collection.insert_one(song_document)
 
@@ -20,4 +20,4 @@ def create_upload(minio_client, collection, user_id: str, request: dict[str, str
 
     upload_id = response['UploadId']
 
-    return {"upload_id": upload_id, "song_id": uuid}
+    return {"upload_id": upload_id, "song_id": song_id}

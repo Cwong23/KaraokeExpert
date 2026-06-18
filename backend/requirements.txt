@@ -5,3 +5,6 @@ flask-jwt-extended
 flask-cors
 python-dotenv
 pymongo
+boto3
+uuid6
+marshmallow
