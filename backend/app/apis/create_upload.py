@@ -1,16 +1,16 @@
 import os
 from http import HTTPStatus
-from app.database.models import new_song
-import uuid
+from backend.app.database.models import new_song
+from uuid import uuid4
 
 
 def create_upload(minio_client, collection, user_id: str, request: dict[str, str]):
-    song_id = str(uuid.uuid4())
+    song_id = str(uuid4())
     file_path = f"{user_id}/{song_id}/"
 
 
 def get_url(minio_client, redis_client, collection, user_id: str, request: dict[str, str]):
-    song_id = str(uuid.uuid4())
+    song_id = str(uuid4())
     file_path = f"{user_id}/{song_id}/"
 
     song_document = new_song(
