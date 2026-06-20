@@ -8,3 +8,4 @@
 minio_data
 .pytest_cache
 **/unet_final.pth
+**/model.pth

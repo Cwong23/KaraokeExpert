@@ -1,0 +1,16 @@
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pth
+*.pt
+*.ckpt
+*.wav
+*.mp3
+*.npy
+data/
+processed_data/
+.git/
+.vscode/
+.idea/
+*.log

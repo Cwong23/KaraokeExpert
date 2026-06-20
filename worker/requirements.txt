@@ -3,3 +3,5 @@ torchaudio
 librosa
 numpy
 confluent_kafka
+boto3
+whisperx
