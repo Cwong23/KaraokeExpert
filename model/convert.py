@@ -39,11 +39,12 @@ class Config:
     inst_force_low: int = 20
     inst_force_high: int = 800
 
-    device: torch.device = field(
-        default_factory=lambda: torch.device(
-            "cuda" if torch.cuda.is_available() else "cpu"
-        )
-    )
+    # device: torch.device = field(
+    #     default_factory=lambda: torch.device(
+    #         "cuda" if torch.cuda.is_available() else "cpu"
+    #     )
+    # )
+    device: torch.device = "cpu"
 
 
 def audio_to_spec(

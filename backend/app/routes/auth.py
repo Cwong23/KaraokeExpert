@@ -1,9 +1,9 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from backend.app.database.models import new_user
 from backend.app.utils.clients import mongo_client
+from bson import ObjectId
 import bcrypt
-
 auth_bp = Blueprint("auth", __name__)
 
 
@@ -41,3 +41,15 @@ def login():
 
     token = create_access_token(identity=str(user["_id"]))
     return jsonify({"token": token}), 200
+
+@auth_bp.route("/me", methods=["GET"])
+@jwt_required()
+def me():
+    db = mongo_client()
+    user_id = get_jwt_identity()
+    user = db.users.find_one({"_id": ObjectId(user_id)})
+
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    return jsonify({"email": user["email"]}), 200

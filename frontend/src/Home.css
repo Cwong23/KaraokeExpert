@@ -67,6 +67,127 @@
   border-color: rgba(255, 255, 255, 0.15);
 }
 
+/* ── Profile menu (top right) ── */
+.profile-menu {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 20;
+}
+
+.profile-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.profile-avatar {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  min-height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transition: border-color 0.2s ease, transform 0.2s ease;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.profile-btn:hover .profile-avatar {
+  border-color: rgba(168, 85, 247, 0.5);
+  transform: translateY(-1px);
+}
+
+.profile-avatar.large {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
+  font-size: 1.1rem;
+}
+
+.profile-dropdown {
+  position: absolute;
+  top: 48px;
+  right: 0;
+  width: 260px;
+  background: #14101e;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  padding: 16px;
+  animation: dropdownFade 0.18s ease both;
+}
+
+@keyframes dropdownFade {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.profile-dropdown-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  min-width: 0;
+}
+
+.profile-email {
+  font-size: 0.85rem;
+  color: #e5e7eb;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+  flex: 1;
+}
+
+.profile-dropdown-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin-bottom: 10px;
+}
+
+.profile-dropdown-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: none;
+  border: none;
+  border-radius: 10px;
+  color: #9ca3af;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  text-align: left;
+}
+
+.profile-dropdown-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+}
+
+.profile-dropdown-item.danger {
+  color: #f87171;
+}
+
+.profile-dropdown-item.danger:hover {
+  background: rgba(248, 113, 113, 0.1);
+  color: #fca5a5;
+}
+
 /* Central Content Container */
 .home-content {
   position: relative;
