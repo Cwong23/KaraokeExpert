@@ -8,9 +8,6 @@
 #### Client
 Write later
 
-#### Gateway
-The gateway layer acts as an abstraction between the client and the backend. It handles REST API requests from the client and handles routing and load balancing to a backend container.
-
 #### Backend
 Call create upload
 Use presigned url to upload song to bucket

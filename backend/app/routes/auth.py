@@ -42,6 +42,7 @@ def login():
     token = create_access_token(identity=str(user["_id"]))
     return jsonify({"token": token}), 200
 
+
 @auth_bp.route("/me", methods=["GET"])
 @jwt_required()
 def me():

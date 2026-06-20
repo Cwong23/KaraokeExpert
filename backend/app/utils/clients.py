@@ -17,7 +17,7 @@ MONGO_ROOT_USER = os.environ["MONGO_ROOT_USER"]
 MONGO_ROOT_PASSWORD = os.environ["MONGO_ROOT_PASSWORD"]
 MONGO_DB_NAME = os.environ["MONGO_DB_NAME"]
 MONGO_PORT = os.getenv("MONGO_PORT", "27017")
-MONGO_HOST = "mongodb" if DOCKER else "localhost"
+MONGO_HOST = os.getenv("MONGO_HOST")
 
 # Redis
 REDIS_HOST = os.environ["REDIS_HOST"]
