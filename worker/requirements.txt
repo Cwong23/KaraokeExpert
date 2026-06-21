@@ -1,7 +1,7 @@
 torch
 torchaudio
 librosa
-numpy
+numpy==2.2.6
 confluent_kafka
 boto3
 whisperx
