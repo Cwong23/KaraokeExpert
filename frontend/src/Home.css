@@ -307,3 +307,173 @@
 .home-btn.secondary:active {
   transform: translateY(0);
 }
+
+/* ── Songs list section ── */
+.songs-section {
+  width: 100%;
+  margin-top: 36px;
+  text-align: left;
+}
+
+.songs-heading {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 14px;
+}
+
+.songs-empty {
+  font-size: 0.9rem;
+  color: #6b7280;
+  text-align: center;
+  padding: 24px 0;
+}
+
+.songs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.song-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+  color: inherit;
+  text-align: left;
+}
+
+.song-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(168, 85, 247, 0.3);
+  transform: translateY(-1px);
+}
+
+.song-item-icon {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.song-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.song-item-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.song-item-status {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  text-transform: capitalize;
+  margin-top: 2px;
+}
+
+.song-item svg:last-child {
+  color: #6b7280;
+  flex-shrink: 0;
+}
+
+/* ── Upload spinner & error ── */
+.spin {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.home-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.upload-error-text {
+  font-size: 0.85rem;
+  color: #f87171;
+  margin-top: 10px;
+  text-align: center;
+}
+
+/* ── File confirm step ── */
+.file-confirm {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(168, 85, 247, 0.25);
+  border-radius: 14px;
+  animation: dropdownFade 0.18s ease both;
+}
+
+.file-confirm-icon {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+.file-confirm-info {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+}
+
+.file-confirm-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-confirm-size {
+  font-size: 0.78rem;
+  color: #9ca3af;
+  margin-top: 2px;
+}
+
+.file-confirm-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.home-btn.small {
+  width: auto;
+  padding: 9px 16px;
+  font-size: 0.85rem;
+}

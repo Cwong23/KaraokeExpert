@@ -2,28 +2,14 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
 
-const API_URL = "http://localhost:5000";
-
 export default function Home() {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [email, setEmail] = useState("Account");
+  const [songs, setSongs] = useState([]);
+  const [selectedFile, setSelectedFile] = useState(null);
   const menuRef = useRef(null);
-
-  // Fetch the current user's email from the backend
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
-    fetch(`${API_URL}/auth/me`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => {
-        if (data?.email) setEmail(data.email);
-      })
-      .catch(() => {});
-  }, []);
+  const fileInputRef = useRef(null);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -46,10 +32,41 @@ export default function Home() {
     navigate("/?mode=login");
   }
 
+  // Trigger the hidden file input when "Upload New Song" is clicked
+  function handleUploadClick() {
+    fileInputRef.current.click();
+  }
+
+  // Store the selected file and show the confirm step
+  function handleFileSelected(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    setSelectedFile(file);
+  }
+
+  function handleCancelSelection() {
+    setSelectedFile(null);
+    fileInputRef.current.value = "";
+  }
+
+  function handleConfirmUpload() {
+    // TODO: connect to backend upload flow, then navigate with song data
+    navigate("/songPreview", { state: { file: selectedFile } });
+  }
+
   return (
     <div className="home-bg">
       <div className="orb orb-1" />
       <div className="orb orb-2" />
+
+      {/* Hidden file input — triggered by the Upload New Song button */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="audio/*"
+        style={{ display: "none" }}
+        onChange={handleFileSelected}
+      />
 
       {/* Profile menu — top right */}
       <div className="profile-menu" ref={menuRef}>
@@ -117,27 +134,74 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="home-actions">
-          <button className="home-btn primary" onClick={() => navigate("/uploadNew")}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-              <polyline points="17 8 12 3 7 8"/>
-              <line x1="12" y1="3" x2="12" y2="15"/>
-            </svg>
-            Upload New Song
-          </button>
+        {selectedFile ? (
+          /* Confirm step — shown after a file has been picked */
+          <div className="file-confirm">
+            <div className="file-confirm-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M9 18V5l12-2v13"/>
+                <circle cx="6" cy="18" r="3"/>
+                <circle cx="18" cy="16" r="3"/>
+              </svg>
+            </div>
+            <div className="file-confirm-info">
+              <p className="file-confirm-name">{selectedFile.name}</p>
+              <p className="file-confirm-size">{(selectedFile.size / 1024 / 1024).toFixed(2)} MB</p>
+            </div>
+            <div className="file-confirm-actions">
+              <button className="home-btn secondary small" onClick={handleCancelSelection}>
+                Cancel
+              </button>
+              <button className="home-btn primary small" onClick={handleConfirmUpload}>
+                Continue
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="home-actions">
+            <button className="home-btn primary" onClick={handleUploadClick}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              Upload New Song
+            </button>
+          </div>
+        )}
 
-          <button className="home-btn secondary" onClick={() => navigate("/uploadOld")}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="8" y1="6" x2="21" y2="6"/>
-              <line x1="8" y1="12" x2="21" y2="12"/>
-              <line x1="8" y1="18" x2="21" y2="18"/>
-              <line x1="3" y1="6" x2="3.01" y2="6"/>
-              <line x1="3" y1="12" x2="3.01" y2="12"/>
-              <line x1="3" y1="18" x2="3.01" y2="18"/>
-            </svg>
-            Select Uploaded Song
-          </button>
+        {/* Uploaded songs list */}
+        <div className="songs-section">
+          <h2 className="songs-heading">Your Songs</h2>
+
+          {songs.length === 0 ? (
+            <p className="songs-empty">No songs uploaded yet.</p>
+          ) : (
+            <div className="songs-list">
+              {songs.map((song) => (
+                <button
+                  key={song._id}
+                  className="song-item"
+                  onClick={() => navigate(`/songs/${song._id}`)}
+                >
+                  <div className="song-item-icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M9 18V5l12-2v13"/>
+                      <circle cx="6" cy="18" r="3"/>
+                      <circle cx="18" cy="16" r="3"/>
+                    </svg>
+                  </div>
+                  <div className="song-item-info">
+                    <p className="song-item-title">{song.title}</p>
+                    <p className="song-item-status">{song.status}</p>
+                  </div>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="9 18 15 12 9 6"/>
+                  </svg>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
