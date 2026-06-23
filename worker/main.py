@@ -8,6 +8,7 @@ from separate import Config, separate_audio
 from bucket_client import container_client, MINIO_BUCKET_NAME
 from speech import transcribe_audio
 from pitch import extract_pitches
+from redis_client import redis_client
 
 log = logging.getLogger(__name__)
 
@@ -62,7 +63,8 @@ def process_audio_job(task):
 
         json_key = f"users/{user_id}/songs/{song_id}/pitches.json"
 
-        # need to set the redis status
+        redis_client.set(f"task:{song_id}:status", "complete")
+
         print(
             f"[WORKER DONE] Successfully finished execution for user {user_id}\n")
         return True
