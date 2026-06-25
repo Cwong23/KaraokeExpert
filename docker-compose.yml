@@ -14,6 +14,7 @@ services:
       PYTHONPATH: /app/src:/app/src/backend
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      MINIO_BUCKET_NAME: songs
       ENDPOINT_URL: ${ENDPOINT_URL}
       MONGO_ROOT_USER: admin
       MONGO_ROOT_PASSWORD: password123
@@ -22,6 +23,7 @@ services:
       MONGO_HOST: mongodb
       REDIS_PORT: 6379
       REDIS_HOST: "redis"
+      REDIS_PASSWORD: "password"
       KAFKA_PORT: 9092
     networks:
       - app-network
@@ -118,12 +120,12 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
-    command: redis-server --requirepass your_strong_password --save 60 1
+    command: redis-server --requirepass password --save 60 1
     networks:              # <-- FIXED: Explicitly attach Redis to the application pool network
       - app-network
     healthcheck:
       # Pass credentials directly down to validation layer command lines
-      test: ["CMD", "redis-cli", "-a", "your_strong_password", "ping"]
+      test: ["CMD", "redis-cli", "-a", "password", "ping"]
       interval: 5s
       timeout: 3s
       retries: 3
