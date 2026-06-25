@@ -2,12 +2,17 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
 
+const API_URL = "http://localhost:5000";
+
 export default function Home() {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [email, setEmail] = useState("Account");
   const [songs, setSongs] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
+  const [uploadStage, setUploadStage] = useState("");
+  const [uploadError, setUploadError] = useState("");
   const menuRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -49,9 +54,98 @@ export default function Home() {
     fileInputRef.current.value = "";
   }
 
-  function handleConfirmUpload() {
-    // TODO: connect to backend upload flow, then navigate with song data
-    navigate("/songPreview", { state: { file: selectedFile } });
+  // Helper function to check if the song is ready repeatedly every 2.5 seconds
+  function pollStatus(token, songId) {
+    return new Promise((resolve, reject) => {
+      async function check() {
+        try {
+          const res = await fetch(`${API_URL}/songs/get_song_status`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ song_id: songId }),
+          });
+
+          if (!res.ok) throw new Error("Status check failed");
+          const data = await res.json();
+
+          if (data.status === "ready") {
+            resolve();
+          } else if (data.status === "failed") {
+            reject(new Error("Processing failed"));
+          } else {
+            setTimeout(check, 2500); // keep polling
+          }
+        } catch (err) {
+          reject(err);
+        }
+      }
+      check();
+    });
+  }
+
+  async function handleConfirmUpload() {
+    setUploading(true);
+    setUploadError("");
+    const token = localStorage.getItem("token");
+
+    try {
+      // Call create upload to get presigned URL
+      const res = await fetch(`${API_URL}/songs/create_upload`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ song_name: selectedFile.name }),
+      });
+
+      if (!res.ok) throw new Error("Failed to create upload");
+
+      const { url, song_id } = await res.json();
+
+      console.log("Got presigned URL:", url);
+      console.log("Got song_id:", song_id);
+
+      // Using presigned URL to put upload song to MinIO
+      const uploadRes = await fetch(url, {
+        method: "PUT",
+        body: selectedFile,
+      });
+
+      if (!uploadRes.ok) throw new Error("Failed to upload file to storage");
+
+      console.log("File uploaded successfully to MinIO!");
+
+      // Call process_song so that song will become processed in backend
+      setUploadStage("processing");
+      const processRes = await fetch(`${API_URL}/songs/process_song`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ song_id }),
+      });
+
+      if (!processRes.ok) throw new Error("Failed to start processing");
+      console.log("Processing started for song_id:", song_id);
+
+      // Call helper function
+      setUploadStage("polling");
+      await pollStatus(token, song_id);
+      console.log("Song is ready!");
+
+      // Navigate to next page
+      navigate("/songPreview", {
+        state: { song_id, song_name: selectedFile.name },
+      });
+
+
+    } catch (err) {
+      setUploadError("Something went wrong. Please try again.");
+    } finally {
+      setUploading(false);
+    }
   }
 
   return (
@@ -135,7 +229,6 @@ export default function Home() {
         </div>
 
         {selectedFile ? (
-          /* Confirm step — shown after a file has been picked */
           <div className="file-confirm">
             <div className="file-confirm-icon">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

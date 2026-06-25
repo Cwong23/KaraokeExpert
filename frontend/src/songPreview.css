@@ -1,0 +1,267 @@
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500&display=swap');
+
+.sp-bg {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  background-color: #0b0813;
+  color: #ffffff;
+  font-family: "DM Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.sp-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(110px);
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.sp-orb-1 {
+  top: -12%;
+  left: -8%;
+  width: 460px;
+  height: 460px;
+  background: #6366f1;
+}
+
+.sp-orb-2 {
+  bottom: -14%;
+  right: -8%;
+  width: 460px;
+  height: 460px;
+  background: #a855f7;
+}
+
+.sp-back-btn {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #9ca3af;
+  padding: 10px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.sp-back-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* ── Stage ── */
+.sp-stage {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 440px;
+  width: 100%;
+  animation: spFadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes spFadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Signature: vinyl record ── */
+.sp-vinyl {
+  position: relative;
+  width: 132px;
+  height: 132px;
+  border-radius: 50%;
+  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 35% 30%, #2a2440, #110d1c 70%);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.06),
+    0 18px 40px rgba(0, 0, 0, 0.5);
+}
+
+.sp-vinyl-grooves {
+  position: absolute;
+  inset: 10px;
+  border-radius: 50%;
+  background:
+    repeating-radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.05) 0px,
+      rgba(255, 255, 255, 0.05) 1px,
+      transparent 2px,
+      transparent 7px
+    );
+}
+
+.sp-vinyl-label {
+  position: relative;
+  z-index: 2;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #a855f7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  box-shadow: 0 0 0 4px #0b0813;
+}
+
+.sp-vinyl-spinning {
+  animation: spSpin 3.2s linear infinite;
+}
+
+@keyframes spSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.sp-vinyl-ready .sp-vinyl-label {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  box-shadow: 0 0 0 4px #0b0813, 0 0 28px rgba(251, 191, 36, 0.45);
+}
+
+.sp-vinyl-stopped {
+  opacity: 0.5;
+}
+
+.sp-vinyl-stopped .sp-vinyl-label {
+  background: linear-gradient(135deg, #4b5563, #374151);
+}
+
+.sp-vinyl-pulse {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(251, 191, 36, 0.5);
+  animation: spPulse 1.8s ease-out infinite;
+}
+
+@keyframes spPulse {
+  0%   { transform: scale(0.92); opacity: 0.9; }
+  100% { transform: scale(1.25); opacity: 0; }
+}
+
+/* ── Text ── */
+.sp-eyebrow {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8b8398;
+  margin-bottom: 8px;
+}
+
+.sp-status {
+  font-family: "Sora", sans-serif;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin: 0 0 14px 0;
+  background: linear-gradient(to bottom, #ffffff, #cfc9da);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.sp-status-ready {
+  background: linear-gradient(to bottom, #fde68a, #fbbf24);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.sp-status-failed {
+  background: linear-gradient(to bottom, #fca5a5, #f87171);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.sp-subtext {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #9ca3af;
+  margin: 0 0 32px 0;
+  max-width: 320px;
+}
+
+/* ── Progress (indeterminate) ── */
+.sp-progress-track {
+  width: 100%;
+  height: 4px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.sp-progress-fill {
+  height: 100%;
+  width: 40%;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #6366f1, #a855f7);
+  animation: spProgress 1.6s ease-in-out infinite;
+}
+
+@keyframes spProgress {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(250%); }
+}
+
+/* ── CTA ── */
+.sp-cta {
+  width: 100%;
+  padding: 14px 24px;
+  margin-top: 24px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: #ffffff;
+  color: #0b0813;
+  border: none;
+  box-shadow: 0 4px 20px rgba(251, 191, 36, 0.18);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sp-cta:hover {
+  transform: translateY(-2px);
+  background: #f3f4f6;
+  box-shadow: 0 8px 28px rgba(251, 191, 36, 0.28);
+}
+
+.sp-cta-secondary {
+  background: rgba(255, 255, 255, 0.04);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: none;
+}
+
+.sp-cta-secondary:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
