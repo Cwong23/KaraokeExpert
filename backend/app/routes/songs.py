@@ -1,8 +1,8 @@
 from flask import Blueprint, current_app, jsonify, request, g
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from backend.app.apis.create_upload import create_upload
 from backend.app.apis.create_upload import get_url
 from backend.app.apis.process_song import process
+from backend.app.apis.get_song_status import get_status
 from http import HTTPStatus
 from backend.app.utils.clients import container_client, mongo_client, redis_client, kafka_client
 from marshmallow import Schema, fields, ValidationError
@@ -22,11 +22,11 @@ def validate_body(schema_class):
     return decorator
 
 
+song_bp = Blueprint('song_bp', __name__)
+
+
 class CreateUploadSchema(Schema):
     song_name = fields.Str(required=True)
-
-
-song_bp = Blueprint('song_bp', __name__)
 
 
 @song_bp.route("/create_upload", methods=["POST"])
@@ -55,3 +55,21 @@ def process_song():
     k_client = kafka_client()
 
     return process(r_client, k_client, get_jwt_identity(), g.validated)
+
+
+@song_bp.route("/<song_id>/get_song_status", methods=["GET"])
+@jwt_required()
+@validate_body(ProcessSongSchema)
+def get_song_status(song_id):
+    r_client = redis_client()
+
+    return get_status(r_client, song_id)
+
+
+@song_bp.route("/<song_id>/get_song_objects", methods=["GET"])
+@jwt_required()
+@validate_body(ProcessSongSchema)
+def get_song_objects(song_id):
+    minio_client = container_client()
+
+    return get_status(minio_client, get_jwt_identity(), song_id)

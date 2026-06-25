@@ -4,17 +4,12 @@ from backend.app.database.models import new_song
 from uuid import uuid4
 
 
-def create_upload(minio_client, collection, user_id: str, request: dict[str, str]):
-    song_id = str(uuid4())
-    file_path = f"{user_id}/{song_id}/"
-
-
 def get_url(minio_client, redis_client, collection, user_id: str, request: dict[str, str]):
-    song_id = str(uuid4())
-    file_path = f"{user_id}/{song_id}/"
+    uuid = str(uuid4())
+    file_path = f"{user_id}/{uuid}/"
 
     song_document = new_song(
-        user_id=user_id, song_id=song_id, title=request["song_name"], file_path=f"{user_id}/{song_id}/")
+        user_id=user_id, song_id=uuid, title=request["song_name"], file_path=f"{user_id}/{uuid}/")
 
     collection.insert_one(song_document)
 
@@ -23,6 +18,6 @@ def get_url(minio_client, redis_client, collection, user_id: str, request: dict[
         Key=file_path + "original.wav"
     )
 
-    redis_client.set(f"task:{song_id}:status", "creating")
+    redis_client.set(f"task:{uuid}:status", "creating")
 
-    return {"upload_id": upload_id, "song_id": song_id}
+    return {"url": url, "song_id": uuid}

@@ -1,7 +1,37 @@
+import io
 import os
 import sys
 
 import whisperx
+
+
+def bucket_words_by_second(segments: list[dict]) -> list[dict]:
+    """
+    Flatten word-level timestamps across all segments and bucket them
+    into 1-second windows.
+
+    Returns a list of {"time": float, "words": str} dicts, one per
+    1-second window that contains at least one word.
+    """
+    buckets: dict[int, list[str]] = {}
+
+    for segment in segments:
+        for word_info in segment.get("words", []):
+            # Some words can lack timing if alignment failed for them
+            if "start" not in word_info:
+                continue
+            # which 1s window it falls in
+            bucket_index = int(word_info["start"])
+            buckets.setdefault(bucket_index, []).append(word_info["word"])
+
+    result = []
+    for bucket_index in sorted(buckets):
+        result.append({
+            "time": float(bucket_index),
+            "words": " ".join(buckets[bucket_index]),
+        })
+
+    return result
 
 
 def _configure_windows_dll_paths() -> None:
@@ -23,7 +53,7 @@ def _configure_windows_dll_paths() -> None:
 
 
 def transcribe_audio(
-    audio_file: str,
+    audio_buffer: io.BytesIO,
     device: str = "cuda",
     model_name: str = "large-v3",
     compute_type: str = "float16",
@@ -50,7 +80,9 @@ def transcribe_audio(
 
     model = whisperx.load_model(
         model_name, device, compute_type=compute_type, vad_options=vad_options)
-    audio = whisperx.load_audio(audio_file)
+
+    audio_buffer.seek(0)
+    audio = whisperx.load_audio(audio_buffer)
 
     result = model.transcribe(
         audio,
@@ -70,7 +102,4 @@ def transcribe_audio(
         return_char_alignments=False,
     )
 
-    return aligned_result["segments"]
-
-
-if __name__ == "__main__":
+    return bucket_words_by_second(aligned_result["segments"])

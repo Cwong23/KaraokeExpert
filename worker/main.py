@@ -1,4 +1,5 @@
 import time
+import json
 import os
 from queue_client import KafkaQueueConsumer
 import io
@@ -6,6 +7,8 @@ import logging
 from separate import Config, separate_audio
 from bucket_client import container_client, MINIO_BUCKET_NAME
 from speech import transcribe_audio
+from pitch import extract_pitches
+from redis_client import redis_client
 
 log = logging.getLogger(__name__)
 
@@ -21,6 +24,7 @@ def process_audio_job(task):
 
     log.info(f"Working on {song_id} for {user_id}")
     try:
+        # grab audio
         source_key = f"users/{user_id}/songs/{song_id}/original.wav"
 
         log.info("Downloading track from MinIO...")
@@ -28,6 +32,7 @@ def process_audio_job(task):
         container_client.download_fileobj(
             MINIO_BUCKET_NAME, source_key, input_buffer)
 
+        # audio separation
         cfg = Config()
         vocal_stream, instr_stream = separate_audio(input_buffer, cfg)
 
@@ -40,13 +45,25 @@ def process_audio_job(task):
         container_client.upload_fileobj(
             instr_stream, MINIO_BUCKET_NAME, instr_key)
 
-        segments = transcribe_audio("output_stems/vocals.wav")
-        for segment in segments:
-            print(
-                f"[{segment['start']:.2f}s -> {segment['end']:.2f}s] {segment['text']}")
-            # need to convert this to save to a file
+        # grab lyrics
+        segments = transcribe_audio(vocal_stream)
 
-        # add the pitch stuff here
+        payload = json.dumps(segments).encode("utf-8")
+        json_stream = io.BytesIO(payload)
+
+        json_key = f"users/{user_id}/songs/{song_id}/lyrics.json"
+
+        container_client.upload_fileobj(
+            json_stream, MINIO_BUCKET_NAME, json_key)
+
+        # grab pitches
+        pitches = extract_pitches(vocal_stream)
+        payload = json.dumps(pitches).encode("utf-8")
+        json_stream = io.BytesIO(payload)
+
+        json_key = f"users/{user_id}/songs/{song_id}/pitches.json"
+
+        redis_client.set(f"task:{song_id}:status", "complete")
 
         print(
             f"[WORKER DONE] Successfully finished execution for user {user_id}\n")

@@ -42,7 +42,6 @@ class KafkaQueueConsumer:
 
         try:
             while not self._shutdown_requested:
-                # Poll for a single message from the queue partition
                 msg = self.consumer.poll(timeout=1.0)
                 if msg is None:
                     continue
@@ -53,10 +52,8 @@ class KafkaQueueConsumer:
                     else:
                         logger.error(
                             f"Kafka Wire Protocol Error: {msg.error()}")
-                        # Do not break here; allow the client to auto-recover/retry connections
                         continue
 
-                # Run payload through business logic execution boundaries
                 self._process_message(msg, task_handler_callback)
 
         finally:
@@ -70,11 +67,9 @@ class KafkaQueueConsumer:
 
             logger.info(f"Processing task event: {task.get('task_type')}")
 
-            # Execute inference logic (convert step)
             success = callback(task)
 
             if success:
-                # Task completed perfectly. Advance the log position offset.
                 self.consumer.commit(message=msg, asynchronous=False)
                 logger.info("Task acknowledged and committed successfully.")
             else:
