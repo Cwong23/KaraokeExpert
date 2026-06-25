@@ -4,6 +4,7 @@ import boto3
 import os
 from pymongo import MongoClient
 from redis import Redis
+from botocore.config import Config
 
 DOCKER = os.getenv("IS_DOCKER") == "true"
 
@@ -34,8 +35,9 @@ def container_client():
         endpoint_url=MINIO_ENDPOINT,
         aws_access_key_id=MINIO_ROOT_USER,
         aws_secret_access_key=MINIO_ROOT_PASSWORD,
+        config=Config(signature_version="s3v4"),
+        region_name="us-east-1",
     )
-
     return s3
 
 
