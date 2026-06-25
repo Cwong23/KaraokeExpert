@@ -35,7 +35,7 @@ def container_client():
         aws_secret_access_key=MINIO_ROOT_PASSWORD,
     )
 
-    yield s3
+    return s3
 
 
 def mongo_client():

@@ -22,11 +22,11 @@ def validate_body(schema_class):
     return decorator
 
 
+song_bp = Blueprint('song_bp', __name__)
+
+
 class CreateUploadSchema(Schema):
     song_name = fields.Str(required=True)
-
-
-song_bp = Blueprint('song_bp', __name__)
 
 
 @song_bp.route("/create_upload", methods=["POST"])
@@ -57,14 +57,19 @@ def process_song():
     return process(r_client, k_client, get_jwt_identity(), g.validated)
 
 
-class GetSongStatusSchema(Schema):
-    song_id = fields.Str(required=True)
-
-
-@song_bp.route("/get_song_status", methods=["GET"])
+@song_bp.route("/<song_id>/get_song_status", methods=["GET"])
 @jwt_required()
 @validate_body(ProcessSongSchema)
-def get_song_status():
+def get_song_status(song_id):
     r_client = redis_client()
 
-    return get_status(r_client, get_jwt_identity(), g.validated)
+    return get_status(r_client, song_id)
+
+
+@song_bp.route("/<song_id>/get_song_objects", methods=["GET"])
+@jwt_required()
+@validate_body(ProcessSongSchema)
+def get_song_objects(song_id):
+    minio_client = container_client()
+
+    return get_status(minio_client, get_jwt_identity(), song_id)
