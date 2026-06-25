@@ -14,8 +14,12 @@ def get_url(minio_client, redis_client, collection, user_id: str, request: dict[
     collection.insert_one(song_document)
 
     url = minio_client.generate_presigned_url(
-        Bucket=os.environ["MINIO_BUCKET_NAME"],
-        Key=file_path + "original.wav"
+        "put_object",
+        Params={
+            "Bucket": os.environ["MINIO_BUCKET_NAME"],
+            "Key": file_path + "original.wav",
+        },
+        ExpiresIn=3600
     )
 
     redis_client.set(f"task:{uuid}:status", "creating")

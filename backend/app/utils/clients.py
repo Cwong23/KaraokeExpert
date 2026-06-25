@@ -22,6 +22,7 @@ MONGO_HOST = os.getenv("MONGO_HOST")
 # Redis
 REDIS_HOST = os.environ["REDIS_HOST"]
 REDIS_PORT = os.environ["REDIS_PORT"]
+REDIS_PASSWORD = os.environ["REDIS_PASSWORD"]
 
 # Kafka
 KAFKA_PORT = os.environ["KAFKA_PORT"]
@@ -46,8 +47,12 @@ def mongo_client():
 
 
 def redis_client():
-    client = Redis(host=REDIS_HOST, port=REDIS_PORT,
-                   db=0, decode_responses=True)
+    client = Redis(
+        host=REDIS_HOST,
+        port=REDIS_PORT,
+        password=REDIS_PASSWORD,
+        decode_responses=True
+    )
     return client
 
 
