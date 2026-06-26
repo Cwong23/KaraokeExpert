@@ -59,4 +59,4 @@ def redis_client():
 
 
 def kafka_client():
-    return Producer({'bootstrap.servers': KAFKA_PORT})
+    return Producer({'bootstrap.servers': f'kafka:{KAFKA_PORT}'})

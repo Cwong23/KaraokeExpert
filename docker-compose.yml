@@ -176,6 +176,18 @@ services:
     networks:
       - app-network
 
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+    networks:
+      - app-network
+    depends_on:
+      - kafka
+
   worker:
     build:
       context: ./worker

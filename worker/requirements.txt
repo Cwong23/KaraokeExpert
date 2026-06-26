@@ -6,3 +6,4 @@ confluent_kafka
 boto3
 whisperx
 redis
+botocore
