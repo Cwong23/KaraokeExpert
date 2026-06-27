@@ -1,4 +1,4 @@
-def get_processing_songs(collection, user_id: str):
+def processing_songs(collection, user_id: str):
     songs = list(collection.find(
         {"user_id": user_id, "status": "processing"},
         {"_id": 0, "song_id": 1}

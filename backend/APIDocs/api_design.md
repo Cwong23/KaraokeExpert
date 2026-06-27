@@ -42,21 +42,47 @@ song_id: str
 
 #### GetSongStatus
 
-`GET /status`
+`GET /<song_id>/status`
 
-Request
-~~~
-song_id: str
-~~~
 
 Response
 ~~~
 status: str
 ~~~
 
-#### GetSong
+#### GetCompletedSongs
 
-`GET /song`
+`GET /get_completed_songs`
+
+
+Response
+~~~
+song_ids: [str]
+~~~
+
+#### GetProcessingSongs
+
+`GET /get_processing_songs`
+
+
+Response
+~~~
+song_ids: [str]
+~~~
+
+#### GetSongObjects
+
+`GET /<song_id>/get_song_objects`
+
+
+Response
+~~~
+urls: [str]
+~~~
+
+#### GetSongData
+
+`GET /<song_id>/get_song_data`
 
 Request
 ~~~
@@ -65,19 +91,9 @@ song_name: str
 
 Response
 ~~~
-url: str
-song_id: str
+song: dict
 ~~~
 
-
-#### DeleteSong
-
-`DELETE /song/delete`
-
-Request
-~~~
-song_id: str
-~~~
 
 #### Register
 `POST /auth/register`
