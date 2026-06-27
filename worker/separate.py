@@ -24,9 +24,6 @@ def separate_audio(
 ) -> tuple[io.BytesIO, io.BytesIO]:
     """
     Separate an in-memory audio buffer into vocal / instrumental streams.
-
-    Returns (vocal_stream, instrumental_stream) as BytesIO objects
-    containing WAV data, positioned at offset 0 and ready to read/upload.
     """
     log.info("Using device: %s", cfg.device)
 
@@ -86,6 +83,7 @@ def separate_audio(
 
     log.info("Separation pipeline completed successfully!")
 
+    # clean up b/c my pc doesn't have enough vram :(
     del model, waveform, separated_tensor
     torch.cuda.empty_cache()
 

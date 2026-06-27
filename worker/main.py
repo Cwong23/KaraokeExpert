@@ -7,10 +7,9 @@ import logging
 from separate import Config, separate_audio
 from bucket_client import container_client, MINIO_BUCKET_NAME
 from speech import transcribe_audio
-from redis_client import redis_client
-from mongo import mongo_client
 import torch
 import gc
+from clients import queue_client, db_client, status_client, container_client
 
 log = logging.getLogger(__name__)
 
@@ -20,8 +19,8 @@ def process_audio_job(task):
     user_id = task.get("user_id")
 
     minio_client = container_client()
-    r_client = redis_client()
-    m_client = mongo_client()
+    redis_client = status_client()
+    mongo_client = db_client()
 
     if not song_id or not user_id:
         log.error("Aborting task: Missing essential metadata.")
@@ -39,13 +38,13 @@ def process_audio_job(task):
             MINIO_BUCKET_NAME, source_key, input_buffer)
 
         # audio separation
+        log.info("Separating audio...")
         cfg = Config()
         vocal_stream, instr_stream = separate_audio(input_buffer, cfg)
 
         vocals_key = f"{user_id}/songs/{song_id}/vocals.wav"
         instr_key = f"{user_id}/songs/{song_id}/instrumental.wav"
 
-        log.info("Uploading processed stems back to MinIO...")
         minio_client.upload_fileobj(
             vocal_stream, MINIO_BUCKET_NAME, vocals_key)
         minio_client.upload_fileobj(
@@ -56,6 +55,7 @@ def process_audio_job(task):
         vocal_stream.seek(0)
 
         # grab lyrics
+        log.info("Generating lyrics...")
         segments = transcribe_audio(vocal_stream)
 
         payload = json.dumps(segments).encode("utf-8")
@@ -75,11 +75,10 @@ def process_audio_job(task):
         # minio_client.upload_fileobj(
         #     json_stream, MINIO_BUCKET_NAME, json_key)
 
-        r_client.set(f"task:{song_id}:status", "complete")
-
+        redis_client.set(f"task:{song_id}:status", "complete")
         query_filter = {"_id": song_id}
         update_operation = {"$set": {"status": "complete"}}
-        m_client.songs.update_one(query_filter, update_operation)
+        mongo_client.songs.update_one(query_filter, update_operation)
 
         return True
 
@@ -97,16 +96,8 @@ def process_audio_job(task):
 
 
 if __name__ == "__main__":
-    kafka_server = os.getenv("KAFKA_BOOTSTRAP_SERVERS", "localhost:9092")
-
-    log.info(f"Initializing Kafka Queue Client pointing to: {kafka_server}")
-
-    client = KafkaQueueConsumer(
-        bootstrap_servers=kafka_server,
-        group_id="karaoke-queue"
-    )
-
-    client.start_worker(
+    kafka_client = queue_client()
+    kafka_client.start_worker(
         topic="song-processing",
         task_handler_callback=process_audio_job
     )

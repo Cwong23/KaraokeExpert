@@ -1,4 +1,4 @@
-def get_completed_songs(collection, user_id: str):
+def completed_songs(collection, user_id: str):
     songs = list(collection.find(
         {"userId": user_id, "status": "complete"},
         {"_id": 0}

@@ -65,9 +65,6 @@ def transcribe_audio(
 ) -> list[dict]:
     """
     Transcribe and word-align an audio file with whisperx.
-
-    Returns the list of aligned segments, each a dict with at least
-    'start', 'end', and 'text' keys.
     """
     _configure_windows_dll_paths()
 

@@ -1,5 +1,4 @@
 import json
-from http import HTTPStatus
 
 
 def process(redis_client, kafka_client, user_id: str, request: dict[str, str]):
