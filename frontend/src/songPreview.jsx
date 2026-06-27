@@ -60,7 +60,7 @@ export default function SongPreview() {
     return new Promise((resolve, reject) => {
       async function check() {
         try {
-          const res = await fetch(`${API_URL}/songs/get_song_status?song_id=${songId}`, {
+          const res = await fetch(`${API_URL}/songs/song_status?song_id=${songId}`, {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
           });
@@ -85,7 +85,7 @@ export default function SongPreview() {
 
   // Fetch the processed song's data (including lyrics) once it's ready
   async function fetchSongData(token, songId) {
-    const res = await fetch(`${API_URL}/songs/${songId}/get_song_objects`, {
+    const res = await fetch(`${API_URL}/songs/${songId}/song_objects`, {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
     });
