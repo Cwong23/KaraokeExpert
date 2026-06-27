@@ -85,15 +85,19 @@ export default function SongPreview() {
 
   // Fetch the processed song's data (including lyrics) once it's ready
   async function fetchSongData(token, songId) {
-    const res = await fetch(`${API_URL}/songs/${songId}/get_song_data`, {
+    const res = await fetch(`${API_URL}/songs/${songId}/get_song_objects`, {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    if (!res.ok) throw new Error("Failed to fetch song data");
+    if (!res.ok) throw new Error("Failed to fetch song objects");
 
-    const data = await res.json();
-    return data.lyrics || [];
+    const { urls } = await res.json();
+    const [instrumentalUrl, lyricsUrl] = urls;
+
+    const lyricsRes = await fetch(lyricsUrl);
+    if (!lyricsRes.ok) throw new Error("Failed to fetch lyrics file");
+    return await lyricsRes.json();
   }
 
   async function handleConfirmUpload() {
