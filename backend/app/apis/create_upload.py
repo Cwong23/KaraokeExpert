@@ -1,17 +1,16 @@
 import os
-from http import HTTPStatus
 from backend.app.database.models import new_song
 from uuid import uuid4
 
 
 def get_url(minio_client, redis_client, collection, user_id: str, request: dict[str, str]):
     uuid = str(uuid4())
-    file_path = f"{user_id}/{uuid}/"
+    file_path = f"{user_id}/songs/{uuid}/"
 
     song_document = new_song(
         user_id=user_id, song_id=uuid, title=request["song_name"], file_path=f"{user_id}/{uuid}/")
 
-    collection.insert_one(song_document)
+    collection.songs.insert_one(song_document)
 
     url = minio_client.generate_presigned_url(
         "put_object",

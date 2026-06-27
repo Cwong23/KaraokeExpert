@@ -194,10 +194,13 @@ services:
       dockerfile: Dockerfile
     container_name: karaoke_worker
     restart: always
+    runtime: nvidia
     volumes:
       - ./worker:/worker
     environment:
       PYTHONUNBUFFERED: 1
+      NVIDIA_VISIBLE_DEVICES: all
+      NVIDIA_DRIVER_CAPABILITIES: compute,utility
       KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
@@ -205,6 +208,12 @@ services:
       ENDPOINT_URL: ${ENDPOINT_URL}
       REDIS_HOST: "redis"
       REDIS_PORT: 6379
+      REDIS_PASSWORD: "password"
+      MONGO_ROOT_USER: admin
+      MONGO_ROOT_PASSWORD: password123
+      MONGO_DB_NAME: karaokeexpert
+      MONGO_PORT: 27017
+      MONGO_HOST: mongodb
     networks:
       - app-network
     depends_on:

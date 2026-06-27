@@ -1,4 +1,3 @@
-import json
 from confluent_kafka import Producer
 import boto3
 import os
