@@ -1,11 +1,9 @@
 import time
 import json
 import os
-from queue_client import KafkaQueueConsumer
 import io
 import logging
 from separate import Config, separate_audio
-from bucket_client import container_client, MINIO_BUCKET_NAME
 from speech import transcribe_audio
 import torch
 import gc
