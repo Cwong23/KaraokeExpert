@@ -4,8 +4,7 @@ import os
 from pymongo import MongoClient
 from redis import Redis
 from botocore.config import Config
-
-DOCKER = os.getenv("IS_DOCKER") == "true"
+from functools import lru_cache
 
 # Minio
 MINIO_ROOT_USER = os.environ["MINIO_ROOT_USER"]
@@ -16,8 +15,8 @@ MINIO_ENDPOINT = os.environ["ENDPOINT_URL"]
 MONGO_ROOT_USER = os.environ["MONGO_ROOT_USER"]
 MONGO_ROOT_PASSWORD = os.environ["MONGO_ROOT_PASSWORD"]
 MONGO_DB_NAME = os.environ["MONGO_DB_NAME"]
-MONGO_PORT = os.getenv("MONGO_PORT", "27017")
-MONGO_HOST = os.getenv("MONGO_HOST")
+MONGO_PORT = os.environ["MONGO_PORT"]
+MONGO_HOST = os.environ["MONGO_HOST"]
 
 # Redis
 REDIS_HOST = os.environ["REDIS_HOST"]
@@ -28,6 +27,7 @@ REDIS_PASSWORD = os.environ["REDIS_PASSWORD"]
 KAFKA_PORT = os.environ["KAFKA_PORT"]
 
 
+@lru_cache(maxsize=1)
 def container_client():
     s3 = boto3.client(
         "s3",
@@ -40,6 +40,7 @@ def container_client():
     return s3
 
 
+@lru_cache(maxsize=1)
 def mongo_client():
     client = MongoClient(
         f"mongodb://{MONGO_ROOT_USER}:{MONGO_ROOT_PASSWORD}@{MONGO_HOST}:{MONGO_PORT}/?authSource=admin")
@@ -47,6 +48,7 @@ def mongo_client():
     return db
 
 
+@lru_cache(maxsize=1)
 def redis_client():
     client = Redis(
         host=REDIS_HOST,
@@ -57,5 +59,6 @@ def redis_client():
     return client
 
 
+@lru_cache(maxsize=1)
 def kafka_client():
     return Producer({'bootstrap.servers': f'kafka:{KAFKA_PORT}'})
