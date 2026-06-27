@@ -27,7 +27,7 @@ def validate_body(schema_class):
 
 song_bp = Blueprint('song_bp', __name__)
 
-SONG_NAME_REGEX = r'^[a-zA-Z0-9]{1-100}$'
+SONG_NAME_REGEX = r'^[a-zA-Z0-9 ._-]{1,100}$'
 SONG_ID_REGEX = r'^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$'
 
 

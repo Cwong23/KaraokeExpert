@@ -111,7 +111,7 @@ services:
       "
     networks:
       - app-network
-  
+
   redis:
     image: redis:7-alpine
     container_name: karaoke_redis
