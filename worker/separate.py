@@ -85,4 +85,8 @@ def separate_audio(
     vocal_stream.seek(0)
 
     log.info("Separation pipeline completed successfully!")
+
+    del model, waveform, separated_tensor
+    torch.cuda.empty_cache()
+
     return vocal_stream, instr_stream

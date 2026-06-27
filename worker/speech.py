@@ -3,6 +3,7 @@ import os
 import sys
 
 import whisperx
+import tempfile
 
 
 def bucket_words_by_second(segments: list[dict]) -> list[dict]:
@@ -70,6 +71,10 @@ def transcribe_audio(
     """
     _configure_windows_dll_paths()
 
+    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
+        tmp.write(audio_buffer.read())
+        tmp_path = tmp.name
+
     if vad_options is None:
         vad_options = {
             "onset": 0.40,
@@ -81,8 +86,7 @@ def transcribe_audio(
     model = whisperx.load_model(
         model_name, device, compute_type=compute_type, vad_options=vad_options)
 
-    audio_buffer.seek(0)
-    audio = whisperx.load_audio(audio_buffer)
+    audio = whisperx.load_audio(tmp_path)
 
     result = model.transcribe(
         audio,
