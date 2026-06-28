@@ -80,6 +80,7 @@ def get_song_status(song_id):
 @jwt_required()
 def get_completed_songs():
     db_client = mongo_client()
+    print("TEST")
     return completed_songs(db_client["songs"], get_jwt_identity())
 
 

@@ -77,7 +77,9 @@ def process_audio_job(task):
         redis_client.set(f"task:{song_id}:status", "complete")
         query_filter = {"_id": song_id}
         update_operation = {"$set": {"status": "complete"}}
-        mongo_client.songs.update_one(query_filter, update_operation)
+        result = mongo_client.songs.update_one(query_filter, update_operation)
+        print(
+            f"Matched: {result.matched_count}, Modified: {result.modified_count}", flush=True)
 
         return True
 
