@@ -1,5 +1,5 @@
 # Karaoke Expert
-Authors: Kyle Lin and [Chris Wong](https://www.linkedin.com/in/chrispwong23/)
+Authors: [Kyle Lin](https://www.linkedin.com/in/kyle-lin-584235295/) and [Chris Wong](https://www.linkedin.com/in/chrispwong23/)
 
 ![](diagrams/upload_page.png)
 
