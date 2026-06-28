@@ -43,7 +43,7 @@ def test_song_upload(mock_minio_client, test_db_client, test_db, mock_redis_clie
 
     response = get_url(
         minio_client=mock_minio_client,
-        collection=test_db,
+        collection=test_db.songs,
         user_id=user_id,
         request=request_data,
         redis_client=mock_redis_client

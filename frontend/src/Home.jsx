@@ -2,11 +2,15 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
 
+const API_URL = "http://localhost:5000";
+
 export default function Home() {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [email, setEmail] = useState("Account");
   const [songs, setSongs] = useState([]);
+  const [songsLoading, setSongsLoading] = useState(true);
+  const [songsError, setSongsError] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
   const menuRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -20,6 +24,50 @@ export default function Home() {
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Fetch completed songs to display
+  useEffect(() => {
+    async function fetchSongs() {
+      const token = localStorage.getItem("token");
+      try {
+        const res = await fetch(`${API_URL}/songs/completed_songs`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) throw new Error("Failed to fetch completed songs");
+        const { song_ids } = await res.json();
+        console.log("SONGS: ", song_ids)
+
+        const songDetails = await Promise.all(
+          song_ids.map(async (id) => {
+            try {
+              const detailRes = await fetch(`${API_URL}/songs/${id}/song_data`, {
+                headers: { Authorization: `Bearer ${token}` },
+              });
+              if (!detailRes.ok) throw new Error("Failed to fetch song data");
+              const { song } = await detailRes.json();
+              return {
+                _id: id,
+                title: song?.title?.replace(/\.[^/.]+$/, "") || `${id.slice(0, 8)}`,
+                status: song?.status || "complete",
+              };
+            } catch (err) {
+              console.error(`Failed to fetch data for song ${id}:`, err);
+              return { _id: id, title: `Song ${id.slice(0, 8)}`, status: "complete" };
+            }
+          })
+        );
+
+        setSongs(songDetails);
+      } catch (err) {
+        console.error("Failed to load completed songs:", err);
+        setSongsError("Couldn't load your songs. Try refreshing.");
+      } finally {
+        setSongsLoading(false);
+      }
+    }
+
+    fetchSongs();
   }, []);
 
   function handleSignOut() {
@@ -54,6 +102,12 @@ export default function Home() {
   function handleConfirmUpload() {
     navigate("/songPreview", {
       state: { audio_file: selectedFile, song_name: selectedFile.name },
+    });
+  }
+
+  function handleOpenSong(song) {
+    navigate("/songPreview", {
+      state: { song_id: song._id, song_name: song.title },
     });
   }
 
@@ -175,7 +229,11 @@ export default function Home() {
         <div className="songs-section">
           <h2 className="songs-heading">Your Songs</h2>
 
-          {songs.length === 0 ? (
+          {songsLoading ? (
+            <p className="songs-empty">Loading your songs...</p>
+          ) : songsError ? (
+            <p className="songs-empty">{songsError}</p>
+          ) : songs.length === 0 ? (
             <p className="songs-empty">No songs uploaded yet.</p>
           ) : (
             <div className="songs-list">
@@ -183,7 +241,7 @@ export default function Home() {
                 <button
                   key={song._id}
                   className="song-item"
-                  onClick={() => navigate(`/songs/${song._id}`)}
+                  onClick={() => handleOpenSong(song)}
                 >
                   <div className="song-item-icon">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -204,6 +262,10 @@ export default function Home() {
             </div>
           )}
         </div>
+        <p className="home-footer">
+          Please do not upload copyrighted songs.<br />
+          Disclaimer: Lyrics may not be 100% correct
+        </p>
       </div>
     </div>
   );
