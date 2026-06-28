@@ -2,7 +2,7 @@ import os
 
 
 def get_urls(minio_client, user_id: str, song_id: str):
-    file_path = f"{user_id}/{song_id}/"
+    file_path = f"{user_id}/songs/{song_id}/"
     urls = []
 
     for key in ["instrumental.wav", "lyrics.json"]:

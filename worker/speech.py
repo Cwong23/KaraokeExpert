@@ -18,18 +18,37 @@ def bucket_words_by_second(segments: list[dict]) -> list[dict]:
 
     for segment in segments:
         for word_info in segment.get("words", []):
-            # Some words can lack timing if alignment failed for them
             if "start" not in word_info:
                 continue
-            # which 1s window it falls in
             bucket_index = int(word_info["start"])
             buckets.setdefault(bucket_index, []).append(word_info["word"])
 
+    # Flatten all words in order first, then apply punctuation
+    ordered_buckets = sorted(buckets)
+    all_words: list[tuple[int, str]] = []  # (bucket_index, word)
+    for bucket_index in ordered_buckets:
+        for word in buckets[bucket_index]:
+            all_words.append((bucket_index, word))
+
+    # Insert periods before capitalized words (except the very first word)
+    for i in range(1, len(all_words)):
+        word = all_words[i][1]
+        if word and word[0].isupper():
+            prev_bucket, prev_word = all_words[i - 1]
+            # Add period to the previous word if it doesn't already have punctuation
+            if prev_word and prev_word[-1] not in ".!?,;:":
+                all_words[i - 1] = (prev_bucket, prev_word + ".")
+
+    # Re-bucket the modified words
+    result_buckets: dict[int, list[str]] = {}
+    for bucket_index, word in all_words:
+        result_buckets.setdefault(bucket_index, []).append(word)
+
     result = []
-    for bucket_index in sorted(buckets):
+    for bucket_index in sorted(result_buckets):
         result.append({
             "time": float(bucket_index),
-            "words": " ".join(buckets[bucket_index]),
+            "words": " ".join(result_buckets[bucket_index]),
         })
 
     return result

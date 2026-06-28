@@ -10,6 +10,7 @@ import gc
 from clients import queue_client, db_client, status_client, container_client
 
 log = logging.getLogger(__name__)
+MINIO_BUCKET_NAME = os.environ["MINIO_BUCKET_NAME"]
 
 
 def process_audio_job(task):
