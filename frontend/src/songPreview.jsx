@@ -67,6 +67,7 @@ export default function SongPreview() {
   const audioRef = useRef(null);
   const lineRefs = useRef([]);
   const menuRef = useRef(null);
+  const scrollContainerRef = useRef(null);
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -104,9 +105,24 @@ export default function SongPreview() {
   }, [lyricsLines, currentTime, playbackStarted]);
 
   useEffect(() => {
+    const container = scrollContainerRef.current;
     const el = lineRefs.current[activeLineIndex];
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "center" });
+    if (!container || !el) return;
+
+    if (activeLineIndex < 3) return;
+
+    const containerRect = container.getBoundingClientRect();
+    const elRect = el.getBoundingClientRect();
+
+    const elTop = elRect.top - containerRect.top + container.scrollTop;
+    const elBottom = elTop + elRect.height;
+
+    const viewTop = container.scrollTop;
+    const viewBottom = viewTop + container.clientHeight;
+
+    if (elTop < viewTop || elBottom > viewBottom) {
+      const target = elTop - container.clientHeight / 2 + elRect.height / 2;
+      container.scrollTo({ top: Math.max(0, target), behavior: "smooth" });
     }
   }, [activeLineIndex]);
 
@@ -466,7 +482,7 @@ export default function SongPreview() {
                 </button>
               </div>
             </div>
-            <div className="sp-lyrics-scroll">
+            <div className="sp-lyrics-scroll" ref={scrollContainerRef}>
               {lyricsLines.length > 0 ? (
                 lyricsLines.map((line, i) => (
                   <p
