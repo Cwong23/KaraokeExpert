@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap");
 
 .sp-bg {
   position: relative;
@@ -6,7 +6,11 @@
   width: 100%;
   background-color: #0b0813;
   color: #ffffff;
-  font-family: "DM Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family:
+    "DM Sans",
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -66,7 +70,6 @@
   border-color: rgba(255, 255, 255, 0.15);
 }
 
-/* ── Profile menu (top right) ── */
 .profile-menu {
   position: absolute;
   top: 24px;
@@ -95,7 +98,9 @@
   font-weight: 700;
   font-size: 0.95rem;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  transition: border-color 0.2s ease, transform 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease;
   flex-shrink: 0;
   box-sizing: border-box;
 }
@@ -127,8 +132,14 @@
 }
 
 @keyframes spDropdownFade {
-  from { opacity: 0; transform: translateY(-6px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .profile-dropdown-header {
@@ -169,7 +180,9 @@
   font-size: 0.85rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
   text-align: left;
 }
 
@@ -187,7 +200,6 @@
   color: #fca5a5;
 }
 
-/* ── Stage ── */
 .sp-stage {
   position: relative;
   z-index: 1;
@@ -201,11 +213,16 @@
 }
 
 @keyframes spFadeUp {
-  from { opacity: 0; transform: translateY(18px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* ── Signature: vinyl record ── */
 .sp-vinyl {
   position: relative;
   width: 132px;
@@ -225,14 +242,13 @@
   position: absolute;
   inset: 10px;
   border-radius: 50%;
-  background:
-    repeating-radial-gradient(
-      circle,
-      rgba(255, 255, 255, 0.05) 0px,
-      rgba(255, 255, 255, 0.05) 1px,
-      transparent 2px,
-      transparent 7px
-    );
+  background: repeating-radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.05) 0px,
+    rgba(255, 255, 255, 0.05) 1px,
+    transparent 2px,
+    transparent 7px
+  );
 }
 
 .sp-vinyl-label {
@@ -254,13 +270,19 @@
 }
 
 @keyframes spSpin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .sp-vinyl-ready .sp-vinyl-label {
   background: linear-gradient(135deg, #fbbf24, #f59e0b);
-  box-shadow: 0 0 0 4px #0b0813, 0 0 28px rgba(251, 191, 36, 0.45);
+  box-shadow:
+    0 0 0 4px #0b0813,
+    0 0 28px rgba(251, 191, 36, 0.45);
 }
 
 .sp-vinyl-stopped {
@@ -280,11 +302,16 @@
 }
 
 @keyframes spPulse {
-  0%   { transform: scale(0.92); opacity: 0.9; }
-  100% { transform: scale(1.25); opacity: 0; }
+  0% {
+    transform: scale(0.92);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.25);
+    opacity: 0;
+  }
 }
 
-/* ── Text ── */
 .sp-eyebrow {
   font-size: 0.78rem;
   font-weight: 600;
@@ -326,7 +353,6 @@
   max-width: 320px;
 }
 
-/* ── Lyrics preview ── */
 .sp-lyrics-card {
   width: 100%;
   margin: 4px 0 8px 0;
@@ -426,7 +452,9 @@
   line-height: 1.7;
   color: #d1cbe0;
   margin: 0 0 10px 0;
-  transition: color 0.25s ease, transform 0.25s ease;
+  transition:
+    color 0.25s ease,
+    transform 0.25s ease;
 }
 
 .sp-lyrics-line:last-child {
@@ -439,7 +467,6 @@
   transform: translateX(2px);
 }
 
-/* ── Progress (indeterminate) ── */
 .sp-progress-track {
   width: 100%;
   height: 4px;
@@ -458,11 +485,14 @@
 }
 
 @keyframes spProgress {
-  0%   { transform: translateX(-100%); }
-  100% { transform: translateX(250%); }
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(250%);
+  }
 }
 
-/* ── CTA ── */
 .sp-cta {
   width: 100%;
   padding: 14px 24px;

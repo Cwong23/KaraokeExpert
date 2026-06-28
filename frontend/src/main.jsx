@@ -5,8 +5,6 @@ import App from "./App.jsx";
 import Home from "./Home.jsx";
 import SongPreview from "./SongPreview.jsx";
 
-
-
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
@@ -14,8 +12,7 @@ createRoot(document.getElementById("root")).render(
         <Route path="/" element={<App />} />
         <Route path="/home" element={<Home />} />
         <Route path="/songPreview" element={<SongPreview />} />
-
       </Routes>
     </BrowserRouter>
-  </StrictMode>
+  </StrictMode>,
 );

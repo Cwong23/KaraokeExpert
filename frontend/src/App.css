@@ -1,6 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500&display=swap");
 
-/* ── Reset & Base Layout ── */
 *,
 *::before,
 *::after {
@@ -10,15 +9,21 @@
 }
 
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .auth-bg {
   position: relative;
   min-height: 100vh;
   width: 100%;
-  background-color: #0b0813; /* Exact theme background color from home page */
+  background-color: #0b0813;
   color: #ffffff;
   font-family: "DM Sans", sans-serif;
   display: flex;
@@ -28,7 +33,6 @@
   padding: 24px;
 }
 
-/* ── Exact Matching Ambient Orbs ── */
 .orb {
   position: absolute;
   border-radius: 50%;
@@ -43,7 +47,7 @@
   left: -10%;
   width: 450px;
   height: 450px;
-  background: #6366f1; /* Indigo glow */
+  background: #6366f1;
 }
 
 .orb-2 {
@@ -51,10 +55,9 @@
   right: -10%;
   width: 450px;
   height: 450px;
-  background: #a855f7; /* Purple glow */
+  background: #a855f7;
 }
 
-/* ── Central Layout Card ── */
 .auth-card {
   position: relative;
   z-index: 1;
@@ -70,7 +73,6 @@
   animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-/* ── Header Icon & Typography ── */
 .auth-header {
   display: flex;
   flex-direction: column;
@@ -90,6 +92,11 @@
 }
 
 .app-icon {
+  fill: none;
+  stroke: white;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
   width: 40px;
   height: 40px;
   position: relative;
@@ -122,7 +129,6 @@
   color: #9ca3af;
 }
 
-/* ── Segmented Tab Toggle ── */
 .auth-tabs {
   display: flex;
   background: rgba(255, 255, 255, 0.04);
@@ -158,7 +164,6 @@
   background: rgba(255, 255, 255, 0.03);
 }
 
-/* ── Form Control Fields ── */
 .auth-form {
   display: flex;
   flex-direction: column;
@@ -200,7 +205,6 @@
   background: rgba(255, 255, 255, 0.07);
 }
 
-/* ── Primary Crisp Action Button ── */
 .auth-btn.primary {
   width: 100%;
   padding: 14px;
@@ -232,7 +236,6 @@
   cursor: not-allowed;
 }
 
-/* ── Secondary Link Options ── */
 .auth-switch {
   text-align: center;
   font-size: 0.88rem;
@@ -253,7 +256,6 @@
   color: #d1d5db;
 }
 
-/* ── Error Output Box ── */
 .auth-error {
   font-size: 0.85rem;
   color: #f87171;

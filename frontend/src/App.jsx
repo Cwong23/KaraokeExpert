@@ -10,22 +10,28 @@ export default function App() {
 
   // If already logged in, go straight to home
   useEffect(() => {
-    if (localStorage.getItem("token")) {
-      navigate("/home");
-    }
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    fetch(`${API_URL}/auth/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+    }).then((res) => {
+      if (res.ok) {
+        navigate("/home");
+      } else {
+        localStorage.removeItem("token");
+      }
+    });
   }, [navigate]);
 
   return (
     <div className="auth-bg">
-      {/* Keeping background orbs identical to the Home page */}
       <div className="orb orb-1" />
       <div className="orb orb-2" />
-
       <div className="auth-card">
         <div className="auth-header">
-          {/* Microphone Icon added to mirror Home design language */}
           <div className="app-icon-wrapper">
-            <svg className="app-icon" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg className="app-icon" viewBox="0 0 24 24">
               <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
               <path d="M19 10v1a7 7 0 0 1-14 0v-1" />
               <line x1="12" y1="19" x2="12" y2="22" />
@@ -114,12 +120,18 @@ function LoginForm({ onSwitchTab }) {
         />
       </div>
       {error && <p className="auth-error">{error}</p>}
-      <button className="auth-btn primary" onClick={handleLogin} disabled={loading}>
+      <button
+        className="auth-btn primary"
+        onClick={handleLogin}
+        disabled={loading}
+      >
         {loading ? "Logging in..." : "Login"}
       </button>
       <p className="auth-switch">
         Don't have an account?{" "}
-        <span className="auth-link" onClick={onSwitchTab}>Sign up</span>
+        <span className="auth-link" onClick={onSwitchTab}>
+          Sign up
+        </span>
       </p>
     </div>
   );
@@ -186,12 +198,18 @@ function SignUpForm({ onSwitchTab }) {
         />
       </div>
       {error && <p className="auth-error">{error}</p>}
-      <button className="auth-btn primary" onClick={handleSignUp} disabled={loading}>
+      <button
+        className="auth-btn primary"
+        onClick={handleSignUp}
+        disabled={loading}
+      >
         {loading ? "Creating account..." : "Create Account"}
       </button>
       <p className="auth-switch">
         Already have an account?{" "}
-        <span className="auth-link" onClick={onSwitchTab}>Login</span>
+        <span className="auth-link" onClick={onSwitchTab}>
+          Login
+        </span>
       </p>
     </div>
   );
