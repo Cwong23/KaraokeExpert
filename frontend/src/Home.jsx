@@ -46,7 +46,6 @@ export default function Home() {
               });
               if (!detailRes.ok) throw new Error("Failed to fetch song data");
               const { song } = await detailRes.json();
-
               return {
                 _id: id,
                 title: song?.title?.replace(/\.[^/.]+$/, "") || `${id.slice(0, 8)}`,
