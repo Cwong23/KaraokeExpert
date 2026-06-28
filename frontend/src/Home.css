@@ -477,3 +477,10 @@
   padding: 9px 16px;
   font-size: 0.85rem;
 }
+
+.home-footer {
+  margin-top: 28px;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  color: #6b7280;
+}
