@@ -13,7 +13,7 @@ function buildLyricsLines(data, maxLineLength = 60) {
 
   data.forEach((entry) => {
     // Break this entry's words into segments at each . or ? (punctuation stays attached to its segment)
-    const segments = entry.words.match(/[^.?]+[.?]|[^.?]+$/g) || [entry.words];
+    const segments = entry.words.match(/[^.?!]+[.?!]|[^.?!]+$/g) || [entry.words];
 
     segments.forEach((rawSegment) => {
       const segment = rawSegment.trim();
@@ -31,7 +31,7 @@ function buildLyricsLines(data, maxLineLength = 60) {
         current = candidate;
       }
 
-      if (/[.?]$/.test(segment)) {
+      if (/[.?!]$/.test(segment)) {
         lines.push({ text: current, time: lineStartTime });
         current = "";
       }
@@ -432,7 +432,8 @@ export default function SongPreview() {
         )}
 
         <p className="sp-footer">
-          Please only upload music you own or have the rights to use. Do not upload copyrighted songs.
+          Please only upload music you own or have the rights to use. <br />
+          Do not upload copyrighted songs.
         </p>
       </div>
     </div>
