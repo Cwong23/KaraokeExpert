@@ -1,7 +1,6 @@
 def processing_songs(collection, user_id: str):
     songs = list(collection.find(
-        {"user_id": user_id, "status": "processing"},
-        {"_id": 0, "song_id": 1}
+        {"userId": user_id, "status": "processing"},
     ))
 
-    return {"song_ids": [s["song_id"] for s in songs]}
+    return {"song_ids": [s["_id"] for s in songs]}

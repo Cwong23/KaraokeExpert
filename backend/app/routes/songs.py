@@ -45,7 +45,7 @@ def create_upload():
     minio_client = container_client()
     db_client = mongo_client()
     r_client = redis_client()
-    collection = db_client["karaokeexpert"]["songs"]
+    collection = db_client["songs"]
 
     if not minio_client:
         return {HTTPStatus.INTERNAL_SERVER_ERROR, {"message": "something went wrong"}}
@@ -80,14 +80,14 @@ def get_song_status(song_id):
 @jwt_required()
 def get_completed_songs():
     db_client = mongo_client()
-    return completed_songs(db_client, get_jwt_identity())
+    return completed_songs(db_client["songs"], get_jwt_identity())
 
 
 @song_bp.route("/processing_songs", methods=["GET"])
 @jwt_required()
 def get_processing_songs():
     db_client = mongo_client()
-    return processing_songs(db_client, get_jwt_identity())
+    return processing_songs(db_client["songs"], get_jwt_identity())
 
 
 @song_bp.route("/<song_id>/song_objects", methods=["GET"])
@@ -101,4 +101,4 @@ def get_song_objects(song_id):
 @jwt_required()
 def get_song_data(song_id):
     db_client = mongo_client()
-    return song_data(db_client, get_jwt_identity(), song_id)
+    return song_data(db_client["songs"], get_jwt_identity(), song_id)

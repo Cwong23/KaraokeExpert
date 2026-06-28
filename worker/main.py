@@ -1,17 +1,16 @@
 import time
 import json
 import os
-from queue_client import KafkaQueueConsumer
 import io
 import logging
 from separate import Config, separate_audio
-from bucket_client import container_client, MINIO_BUCKET_NAME
 from speech import transcribe_audio
 import torch
 import gc
 from clients import queue_client, db_client, status_client, container_client
 
 log = logging.getLogger(__name__)
+MINIO_BUCKET_NAME = os.environ["MINIO_BUCKET_NAME"]
 
 
 def process_audio_job(task):

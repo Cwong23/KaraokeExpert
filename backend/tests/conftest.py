@@ -62,7 +62,7 @@ def test_db_client():
 
 @pytest.fixture(scope="function")
 def test_db(test_db_client):
-    db_name = "karaokeexpert"
+    db_name = "test_db"
     db = test_db_client[db_name]
 
     yield db

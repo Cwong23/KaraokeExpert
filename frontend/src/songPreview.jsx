@@ -60,7 +60,7 @@ export default function SongPreview() {
     return new Promise((resolve, reject) => {
       async function check() {
         try {
-          const res = await fetch(`${API_URL}/songs/song_status?song_id=${songId}`, {
+          const res = await fetch(`${API_URL}/songs/${songId}/song_status`, {
             method: "GET",
             headers: { Authorization: `Bearer ${token}` },
           });
@@ -68,7 +68,7 @@ export default function SongPreview() {
           if (!res.ok) throw new Error("Status check failed");
           const data = await res.json();
 
-          if (data.status === "ready") {
+          if (data.status === "complete") {
             resolve();
           } else if (data.status === "failed") {
             reject(new Error("Processing failed"));
