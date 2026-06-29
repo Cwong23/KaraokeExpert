@@ -194,7 +194,7 @@ services:
       dockerfile: Dockerfile
     container_name: karaoke_worker
     restart: always
-    # runtime: nvidia
+    runtime: nvidia
     volumes:
       - ./worker:/worker
     environment:
