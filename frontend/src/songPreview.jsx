@@ -4,16 +4,16 @@ import "./SongPreview.css";
 
 const API_URL = "http://localhost:5000";
 
-// Split lines by periods/question marks, with a max character count of 60 to avoid overly long lines.
-// Each line also keeps the timestamp it started at, so playback can be synced to it.
+// Split lines by periods/question marks/exclamation marks with a max character count of 60 to avoid overly long lines
 function buildLyricsLines(data, maxLineLength = 60) {
   const lines = [];
   let current = "";
   let lineStartTime = 0;
 
   data.forEach((entry) => {
-    // Break this entry's words into segments at each . or ? (punctuation stays attached to its segment)
-    const segments = entry.words.match(/[^.?!]+[.?!]|[^.?!]+$/g) || [entry.words];
+    const segments = entry.words.match(/[^.?!]+[.?!]|[^.?!]+$/g) || [
+      entry.words,
+    ];
 
     segments.forEach((rawSegment) => {
       const segment = rawSegment.trim();
@@ -61,14 +61,14 @@ export default function SongPreview() {
   const [instrumentalUrl, setInstrumentalUrl] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [playbackStarted, setPlaybackStarted] = useState(false); // distinguishes "never played" from currentTime just happening to be 0
+  const [playbackStarted, setPlaybackStarted] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [email, setEmail] = useState("Account");
   const audioRef = useRef(null);
   const lineRefs = useRef([]);
   const menuRef = useRef(null);
+  const scrollContainerRef = useRef(null);
 
-  // Close the profile dropdown when clicking outside it
   useEffect(() => {
     function handleClickOutside(e) {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
@@ -89,13 +89,10 @@ export default function SongPreview() {
     navigate("/?mode=login");
   }
 
-
   const lyricsLines = useMemo(() => buildLyricsLines(lyricsData), [lyricsData]);
 
-  // Figure out which lyric line is "active" right now, based on playback time.
-  // Lines are in ascending time order, so this is just the last line whose time has passed.
   const activeLineIndex = useMemo(() => {
-    if (!playbackStarted) return -1; // nothing should be highlighted before the user has pressed play
+    if (!playbackStarted) return -1;
     let idx = -1;
     for (let i = 0; i < lyricsLines.length; i++) {
       if (lyricsLines[i].time <= currentTime) {
@@ -107,15 +104,28 @@ export default function SongPreview() {
     return idx;
   }, [lyricsLines, currentTime, playbackStarted]);
 
-  // Auto-scroll the active line into view as playback progresses
   useEffect(() => {
+    const container = scrollContainerRef.current;
     const el = lineRefs.current[activeLineIndex];
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth", block: "center" });
+    if (!container || !el) return;
+
+    if (activeLineIndex < 3) return;
+
+    const containerRect = container.getBoundingClientRect();
+    const elRect = el.getBoundingClientRect();
+
+    const elTop = elRect.top - containerRect.top + container.scrollTop;
+    const elBottom = elTop + elRect.height;
+
+    const viewTop = container.scrollTop;
+    const viewBottom = viewTop + container.clientHeight;
+
+    if (elTop < viewTop || elBottom > viewBottom) {
+      const target = elTop - container.clientHeight / 2 + elRect.height / 2;
+      container.scrollTo({ top: Math.max(0, target), behavior: "smooth" });
     }
   }, [activeLineIndex]);
 
-  // Helper function to check if the song is ready repeatedly
   function pollStatus(token, songId) {
     return new Promise((resolve, reject) => {
       async function check() {
@@ -143,7 +153,6 @@ export default function SongPreview() {
     });
   }
 
-  // Fetch the processed song's data (including lyrics) once it's ready
   async function fetchSongData(token, songId) {
     const res = await fetch(`${API_URL}/songs/${songId}/song_objects`, {
       method: "GET",
@@ -225,9 +234,7 @@ export default function SongPreview() {
       setLyricsData(lyrics);
       setInstrumentalUrl(instrumentalUrl);
 
-      // We're already on SongPreview, so just flip status instead of navigating
       setStatus("ready");
-
     } catch (err) {
       setUploadError("Something went wrong. Please try again.");
       setStatus("failed");
@@ -239,23 +246,20 @@ export default function SongPreview() {
     if (isPlaying) {
       audioRef.current.pause();
     } else {
-      audioRef.current.play().catch((err) => console.error("Playback failed:", err));
+      audioRef.current
+        .play()
+        .catch((err) => console.error("Playback failed:", err));
       setPlaybackStarted(true);
     }
     setIsPlaying((prev) => !prev);
   }
 
-  // Jump playback (and the lyric sync) back to the very start of the song
   function restartPlayback() {
     if (!audioRef.current) return;
     audioRef.current.currentTime = 0;
-    setCurrentTime(0); // update immediately so the active lyric line resets right away, not on the next timeupdate tick
+    setCurrentTime(0);
   }
 
-
-  // Kick off the upload flow as soon as we land on this page, if a file was passed in.
-  // If there's no file but a song_id was passed instead (e.g. opened from the library),
-  // poll and fetch that real song's data.
   const hasStarted = useRef(false);
   useEffect(() => {
     if (hasStarted.current) return;
@@ -272,7 +276,10 @@ export default function SongPreview() {
         const token = localStorage.getItem("token");
         try {
           await pollStatus(token, songId);
-          const { lyrics, instrumentalUrl } = await fetchSongData(token, songId);
+          const { lyrics, instrumentalUrl } = await fetchSongData(
+            token,
+            songId,
+          );
           setLyricsData(lyrics);
           setInstrumentalUrl(instrumentalUrl);
           setStatus("ready");
@@ -284,10 +291,10 @@ export default function SongPreview() {
       }
       loadExistingSong();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const isLoading = status === "uploading" || status === "processing" || status === "polling";
+  const isLoading =
+    status === "uploading" || status === "processing" || status === "polling";
   const isReady = status === "ready";
 
   return (
@@ -296,19 +303,36 @@ export default function SongPreview() {
       <div className="sp-orb sp-orb-2" />
 
       <button className="sp-back-btn" onClick={() => navigate("/home")}>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M19 12H5M12 5l-7 7 7 7"/>
+        <svg
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M19 12H5M12 5l-7 7 7 7" />
         </svg>
         Back to Home
       </button>
 
-      {/* Profile menu — top right */}
       <div className="profile-menu" ref={menuRef}>
         <button className="profile-btn" onClick={() => setMenuOpen((v) => !v)}>
           <div className="profile-avatar">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-              <circle cx="12" cy="7" r="4"/>
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
             </svg>
           </div>
         </button>
@@ -317,9 +341,18 @@ export default function SongPreview() {
           <div className="profile-dropdown">
             <div className="profile-dropdown-header">
               <div className="profile-avatar large">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                  <circle cx="12" cy="7" r="4"/>
+                <svg
+                  width="26"
+                  height="26"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
                 </svg>
               </div>
               <p className="profile-email">{email}</p>
@@ -327,21 +360,45 @@ export default function SongPreview() {
 
             <div className="profile-dropdown-divider" />
 
-            <button className="profile-dropdown-item" onClick={handleSwitchAccount}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M17 1l4 4-4 4"/>
-                <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
-                <path d="M7 23l-4-4 4-4"/>
-                <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+            <button
+              className="profile-dropdown-item"
+              onClick={handleSwitchAccount}
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M17 1l4 4-4 4" />
+                <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+                <path d="M7 23l-4-4 4-4" />
+                <path d="M21 13v2a4 4 0 0 1-4 4H3" />
               </svg>
               Switch account
             </button>
 
-            <button className="profile-dropdown-item danger" onClick={handleSignOut}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-                <polyline points="16 17 21 12 16 7"/>
-                <line x1="21" y1="12" x2="9" y2="12"/>
+            <button
+              className="profile-dropdown-item danger"
+              onClick={handleSignOut}
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
               </svg>
               Sign out
             </button>
@@ -350,14 +407,26 @@ export default function SongPreview() {
       </div>
 
       <div className="sp-stage">
-        {/* Signature element: vinyl record */}
-        <div className={`sp-vinyl ${isReady ? "sp-vinyl-ready" : !isLoading ? "sp-vinyl-stopped" : ""}`}>
+        <div
+          className={`sp-vinyl ${isReady ? "sp-vinyl-ready" : !isLoading ? "sp-vinyl-stopped" : ""}`}
+        >
           <div className="sp-vinyl-grooves" />
-          <div className={`sp-vinyl-label ${isLoading ? "sp-vinyl-spinning" : ""}`}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M9 18V5l12-2v13"/>
-              <circle cx="6" cy="18" r="3"/>
-              <circle cx="18" cy="16" r="3"/>
+          <div
+            className={`sp-vinyl-label ${isLoading ? "sp-vinyl-spinning" : ""}`}
+          >
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M9 18V5l12-2v13" />
+              <circle cx="6" cy="18" r="3" />
+              <circle cx="18" cy="16" r="3" />
             </svg>
           </div>
           {isReady && <div className="sp-vinyl-pulse" />}
@@ -368,7 +437,9 @@ export default function SongPreview() {
         {isLoading && (
           <>
             <h1 className="sp-status">{LOADING_MESSAGES[status]}</h1>
-            <p className="sp-subtext">This may take a moment depending on the song length.</p>
+            <p className="sp-subtext">
+              This may take a moment depending on the song length.
+            </p>
           </>
         )}
 
@@ -376,7 +447,8 @@ export default function SongPreview() {
           <>
             <h1 className="sp-status sp-status-failed">Song not found</h1>
             <p className="sp-subtext">
-              {uploadError || "We couldn't find this song. Try uploading it again from the home page."}
+              {uploadError ||
+                "We couldn't find this song. Try uploading it again from the home page."}
             </p>
           </>
         )}
@@ -386,8 +458,21 @@ export default function SongPreview() {
             <div className="sp-lyrics-header">
               <p className="sp-lyrics-label">Lyrics Preview</p>
               <div className="sp-lyrics-controls">
-                <button className="sp-restart-btn" onClick={restartPlayback} aria-label="Restart from beginning">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <button
+                  className="sp-restart-btn"
+                  onClick={restartPlayback}
+                  aria-label="Restart from beginning"
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
                     <polygon points="19 20 9 12 19 4 19 20"></polygon>
                     <line x1="5" y1="19" x2="5" y2="5"></line>
                   </svg>
@@ -397,7 +482,7 @@ export default function SongPreview() {
                 </button>
               </div>
             </div>
-            <div className="sp-lyrics-scroll">
+            <div className="sp-lyrics-scroll" ref={scrollContainerRef}>
               {lyricsLines.length > 0 ? (
                 lyricsLines.map((line, i) => (
                   <p
@@ -409,7 +494,9 @@ export default function SongPreview() {
                   </p>
                 ))
               ) : (
-                <p className="sp-lyrics-line">No lyrics available for this song.</p>
+                <p className="sp-lyrics-line">
+                  No lyrics available for this song.
+                </p>
               )}
             </div>
           </div>
@@ -426,14 +513,18 @@ export default function SongPreview() {
         )}
 
         {status === "failed" && (
-          <button className="sp-cta sp-cta-secondary" onClick={() => navigate("/home")}>
+          <button
+            className="sp-cta sp-cta-secondary"
+            onClick={() => navigate("/home")}
+          >
             Back to Home
           </button>
         )}
 
         <p className="sp-footer">
-          Please only upload music you own or have the rights to use. <br />
-          Do not upload copyrighted songs.
+          Please do not upload copyrighted songs.
+          <br />
+          Disclaimer: Lyrics may not be 100% correct
         </p>
       </div>
     </div>
