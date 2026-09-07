@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import "./SongPreview.css";
 
-const API_URL = "http://localhost:5000";
+const API_URL = import.meta.env.VITE_API_URL;
 
 // Split lines by periods/question marks/exclamation marks with a max character count of 60 to avoid overly long lines
 function buildLyricsLines(data, maxLineLength = 60) {
