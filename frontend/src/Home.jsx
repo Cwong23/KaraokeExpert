@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
 
-const API_URL = "http://localhost:5000";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function Home() {
   const navigate = useNavigate();
@@ -34,7 +34,6 @@ export default function Home() {
         });
         if (!res.ok) throw new Error("Failed to fetch completed songs");
         const { song_ids } = await res.json();
-        console.log("SONGS: ", song_ids);
 
         const songDetails = await Promise.all(
           song_ids.map(async (id) => {

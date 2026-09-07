@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import App from "./App.jsx";
 import Home from "./Home.jsx";
-import SongPreview from "./SongPreview.jsx";
+import SongPreview from "./songPreview.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
