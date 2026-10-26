@@ -4,6 +4,119 @@ import "./Home.css";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
+// Validation constants
+const MAX_FILE_SIZE_MB = 50;
+const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
+const MAX_FILE_NAME_LENGTH = 255;
+const ALLOWED_AUDIO_EXTENSIONS = [
+  "mp3",
+  "wav",
+  "m4a",
+  "aac",
+  "flac",
+  "ogg",
+  "oga",
+  "opus",
+  "webm",
+];
+
+function validateAudioFile(file) {
+  if (!file) return "No file selected.";
+  if (!(file instanceof File)) return "Invalid file.";
+
+  const name = typeof file.name === "string" ? file.name.trim() : "";
+  if (!name) return "File must have a name.";
+  if (name.length > MAX_FILE_NAME_LENGTH)
+    return `File name must be ${MAX_FILE_NAME_LENGTH} characters or fewer.`;
+
+  const extension = name.includes(".")
+    ? name.split(".").pop().toLowerCase()
+    : "";
+  const hasAudioMime =
+    typeof file.type === "string" && file.type.startsWith("audio/");
+  const hasAudioExtension = ALLOWED_AUDIO_EXTENSIONS.includes(extension);
+  if (!hasAudioMime && !hasAudioExtension)
+    return "Please choose an audio file (e.g. MP3, WAV, M4A).";
+
+  if (file.size === 0) return "This file is empty.";
+  if (file.size > MAX_FILE_SIZE_BYTES)
+    return `File is too large. Maximum size is ${MAX_FILE_SIZE_MB} MB.`;
+
+  return "";
+}
+
+function isValidSongId(id) {
+  return typeof id === "string" && id.trim().length > 0;
+}
+
+const AUDIO_CHECK_TIMEOUT_MS = 15000;
+const CORRUPTED_FILE_ERROR =
+  "This audio file appears to be corrupted or in an unsupported format.";
+
+function withTimeout(promise, ms) {
+  let timer;
+  const timeout = new Promise((resolve) => {
+    timer = setTimeout(() => resolve(false), ms);
+  });
+  return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
+}
+
+function checkAudioMetadata(file) {
+  return new Promise((resolve) => {
+    const url = URL.createObjectURL(file);
+    const audio = document.createElement("audio");
+    audio.preload = "metadata";
+
+    let done = false;
+    function finish(ok) {
+      if (done) return;
+      done = true;
+      audio.onloadedmetadata = null;
+      audio.onerror = null;
+      audio.removeAttribute("src");
+      audio.load();
+      URL.revokeObjectURL(url);
+      resolve(ok);
+    }
+
+    audio.onloadedmetadata = () => finish(audio.duration > 0);
+    audio.onerror = () => finish(false);
+    audio.src = url;
+  });
+}
+
+async function checkAudioDecodes(file) {
+  const OfflineCtx =
+    window.OfflineAudioContext || window.webkitOfflineAudioContext;
+  if (!OfflineCtx) return true;
+  try {
+    const ctx = new OfflineCtx(1, 1, 44100);
+    const buffer = await file.arrayBuffer();
+    const decoded = await ctx.decodeAudioData(buffer);
+    return (
+      decoded.duration > 0 && decoded.numberOfChannels > 0 && decoded.length > 0
+    );
+  } catch {
+    return false;
+  }
+}
+
+async function validateAudioContents(file) {
+  const metadataOk = await withTimeout(
+    checkAudioMetadata(file),
+    AUDIO_CHECK_TIMEOUT_MS,
+  );
+  if (!metadataOk) return CORRUPTED_FILE_ERROR;
+
+  const decodesOk = await withTimeout(
+    checkAudioDecodes(file),
+    AUDIO_CHECK_TIMEOUT_MS,
+  );
+  if (!decodesOk) return CORRUPTED_FILE_ERROR;
+
+  return "";
+}
+
 export default function Home() {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -12,8 +125,11 @@ export default function Home() {
   const [songsLoading, setSongsLoading] = useState(true);
   const [songsError, setSongsError] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
+  const [uploadError, setUploadError] = useState("");
+  const [validatingFile, setValidatingFile] = useState(false);
   const menuRef = useRef(null);
   const fileInputRef = useRef(null);
+  const validationIdRef = useRef(0);
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -28,18 +144,37 @@ export default function Home() {
   useEffect(() => {
     async function fetchSongs() {
       const token = localStorage.getItem("token");
+      if (!token) {
+        setSongsLoading(false);
+        navigate("/?mode=login");
+        return;
+      }
+      if (!API_URL) {
+        console.error("VITE_API_URL is not set");
+        setSongsError("Couldn't load your songs. Try refreshing.");
+        setSongsLoading(false);
+        return;
+      }
       try {
         const res = await fetch(`${API_URL}/songs/completed_songs`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+        if (res.status === 401) {
+          localStorage.removeItem("token");
+          navigate("/?mode=login");
+          return;
+        }
         if (!res.ok) throw new Error("Failed to fetch completed songs");
-        const { song_ids } = await res.json();
+        const data = await res.json();
+        const song_ids = Array.isArray(data?.song_ids)
+          ? data.song_ids.filter(isValidSongId)
+          : [];
 
         const songDetails = await Promise.all(
           song_ids.map(async (id) => {
             try {
               const detailRes = await fetch(
-                `${API_URL}/songs/${id}/song_data`,
+                `${API_URL}/songs/${encodeURIComponent(id)}/song_data`,
                 {
                   headers: { Authorization: `Bearer ${token}` },
                 },
@@ -49,8 +184,13 @@ export default function Home() {
               return {
                 _id: id,
                 title:
-                  song?.title?.replace(/\.[^/.]+$/, "") || `${id.slice(0, 8)}`,
-                status: song?.status || "complete",
+                  (typeof song?.title === "string" &&
+                    song.title.replace(/\.[^/.]+$/, "").trim()) ||
+                  `${id.slice(0, 8)}`,
+                status:
+                  typeof song?.status === "string" && song.status
+                    ? song.status
+                    : "complete",
               };
             } catch (err) {
               console.error(`Failed to fetch data for song ${id}:`, err);
@@ -86,27 +226,61 @@ export default function Home() {
   }
 
   function handleUploadClick() {
+    if (!fileInputRef.current || validatingFile) return;
+    setUploadError("");
     fileInputRef.current.click();
   }
 
-  function handleFileSelected(e) {
-    const file = e.target.files[0];
+  async function handleFileSelected(e) {
+    const input = e.target;
+    const file = input.files?.[0];
     if (!file) return;
+
+    // Ignore results from an older check if a newer file was picked
+    const validationId = ++validationIdRef.current;
+    setSelectedFile(null);
+    setUploadError("");
+
+    let error = validateAudioFile(file);
+    if (!error) {
+      setValidatingFile(true);
+      error = await validateAudioContents(file);
+      if (validationId !== validationIdRef.current) return;
+      setValidatingFile(false);
+    }
+
+    if (error) {
+      setUploadError(error);
+      // Reset so the same file can be re-selected after an error
+      input.value = "";
+      return;
+    }
     setSelectedFile(file);
   }
 
   function handleCancelSelection() {
+    validationIdRef.current++;
+    setValidatingFile(false);
     setSelectedFile(null);
-    fileInputRef.current.value = "";
+    setUploadError("");
+    if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
   function handleConfirmUpload() {
+    const error = validateAudioFile(selectedFile);
+    if (error) {
+      setUploadError(error);
+      setSelectedFile(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
     navigate("/songPreview", {
       state: { audio_file: selectedFile, song_name: selectedFile.name },
     });
   }
 
   function handleOpenSong(song) {
+    if (!song || !isValidSongId(song._id)) return;
     navigate("/songPreview", {
       state: { song_id: song._id, song_name: song.title },
     });
@@ -245,15 +419,25 @@ export default function Home() {
           </div>
         ) : (
           <div className="home-actions">
-            <button className="home-btn primary" onClick={handleUploadClick}>
+            <button
+              className="home-btn primary"
+              onClick={handleUploadClick}
+              disabled={validatingFile}
+            >
               <svg className="upload-icon" viewBox="0 0 24 24">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                 <polyline points="17 8 12 3 7 8" />
                 <line x1="12" y1="3" x2="12" y2="15" />
               </svg>
-              Upload New Song
+              {validatingFile ? "Checking file..." : "Upload New Song"}
             </button>
           </div>
+        )}
+
+        {uploadError && (
+          <p className="upload-error" role="alert">
+            {uploadError}
+          </p>
         )}
 
         {/* Uploaded songs list */}

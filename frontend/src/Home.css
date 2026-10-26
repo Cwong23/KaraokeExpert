@@ -534,3 +534,9 @@
   stroke-linecap: round;
   stroke-linejoin: round;
 }
+
+.upload-error {
+  color: #ff6b6b;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
